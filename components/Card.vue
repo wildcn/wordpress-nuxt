@@ -1,0 +1,160 @@
+<template>
+  <div class="card">
+    <div class="avatar">
+      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
+      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
+      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
+    </div>
+    <div class="introduce">
+      <div class="name">杜连强</div>
+      <div class="autograph">
+        <i class="iconfont icon-sign"></i>简单做人 认真做事 乐观人生
+      </div>
+    </div>
+    <div class="achievements">
+      <div class="github">
+        <i class="iconfont icon-github"></i>
+        <a href="https://github.com/wildcn" target="_blank">https://github.com/wildcn</a>
+      </div>
+      <div class="repos" v-show="repos.length">
+        <li v-for="(item,index) in repos" :key="index">
+          <a :href="item.html_url" target="_blank">{{item.name}}</a>
+          <div class="info">
+            <span class="language" v-show="item.language">
+              <i class="iconfont icon-language"></i>
+              {{item.language}}
+            </span>
+            <span class="forks" v-show="item.forks">
+              <i class="iconfont icon-fork"></i>
+              {{item.forks}}
+            </span>
+            <span class="star" v-show="item.stargazers_count">
+              <i class="iconfont icon-star"></i>
+              {{item.stargazers_count}}
+            </span>
+          </div>
+        </li>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        repos: [],
+      }
+    },
+    mounted() {
+      this.$github({
+        url: 'https://api.github.com/users/wildcn/repos',
+        method: 'get',
+      }).then((data) => {
+        if (data.status === 200) {
+          this.repos = data.data
+        }
+      })
+    },
+  }
+</script>
+
+<style lang="scss" scoped>
+  @import '~/styles/var.scss';
+  .card {
+    width: 300px;
+    margin: 20px auto;
+    .avatar {
+      width: 200px;
+      height: 150px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      img {
+        width: 150px;
+        height: 150px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        border: 1px solid #b3b3b3;
+        border-radius: 50%;
+        opacity: 0.2;
+        &:nth-child(2) {
+          left: 25px;
+          z-index: 3;
+          opacity: 1;
+        }
+        &:nth-child(3) {
+          left: 50px;
+          z-index: 1;
+          opacity: 0.2;
+        }
+      }
+    }
+  }
+  .introduce {
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 20px;
+    margin: 20px auto;
+    .name {
+      font-size: 18px;
+      color: #333;
+    }
+    .autograph {
+      font-size: 12px;
+      color: #999;
+      line-height: 18px;
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+  .achievements {
+    .github {
+      font-size: 14px;
+      color: $primary;
+      font-style: italic;
+      a {
+        color: $primary;
+      }
+      i {
+        font-size: 14px;
+      }
+    }
+    .repos {
+      margin: 20px 0px 20px 20px;
+      padding: 0px;
+      text-align: left;
+      overflow-y: scroll;
+      height: 300px;
+      a {
+        color: #333;
+      }
+      li {
+        padding: 8px;
+        border-bottom: 1px solid #f1f1f1;
+        border-radius: 2px;
+        &:nth-child(2n) {
+          background-color: #eee;
+        }
+        &:hover {
+          cursor: pointer;
+          * {
+            color: #fff;
+          }
+          background-color: $primary;
+        }
+        i {
+          font-size: 14px;
+        }
+        .info {
+          padding-top: 5px;
+          font-size: 12px;
+          color: #999;
+          line-height: 1em;
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,7 @@
+@import './var.scss';
+a{
+  text-decoration: none;
+  &:hover{
+    color: $primary;
+  }
+}
