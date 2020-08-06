@@ -23,6 +23,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "fs": "^0.0.1-security",
     "prettier": "^2.0.5",
+    "qrcodejs2": "^0.0.2",
     "sass": "^1.26.10",
     "sass-loader": "^9.0.2"
   }

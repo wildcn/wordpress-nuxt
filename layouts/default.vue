@@ -28,9 +28,12 @@
     align-items: center;
     text-align: center;
     margin-top: 60px;
+    overflow: hidden;
   }
   .content {
     display: block;
+    background-color: #f9f9f9;
+    overflow: hidden;
   }
   .main {
     margin: 960px;

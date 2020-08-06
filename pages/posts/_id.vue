@@ -1,14 +1,13 @@
 <template>
   <div id="article">
-    <div class="left-tool">
-      <div id="date">
-        <div class="year">
-          <span>{{time.year}}</span>
+    <page-tool class="left-tool" :date="postModel.date"></page-tool>
+    <transition name="fade">
+      <div class="header-fixed" v-if="fixedHeader">
+        <div class="content">
+          <h1>{{postModel.title.rendered}}</h1>
         </div>
-        <div class="md">{{time.md}}</div>
-        <div class="time">{{time.time}}</div>
       </div>
-    </div>
+    </transition>
     <div id="content">
       <div class="main">
         <h1>{{postModel.title.rendered}}</h1>
@@ -41,8 +40,12 @@
 
 <script>
   import { PostModel } from '../../resource'
+  import PageTool from '../../components/PageTool';
   import wp from '../../plugins/wpapi'
   export default {
+    components: {
+      PageTool,
+    },
     async asyncData(ctx) {
       const id = +ctx.params.id
       const postModel = await new PostModel(id)
@@ -63,7 +66,12 @@
       return {
         postModel: {},
         recommand: [],
+        fixedHeader: false,
+        rewardDialog: false,
       }
+    },
+    mounted() {
+      window.addEventListener('scroll', this.changeScroll)
     },
     computed: {
       time() {
@@ -84,6 +92,18 @@
         return this.recommand.filter((item) => item.id !== this.id)
       },
     },
+    methods: {
+      changeScroll() {
+        // 获取高度
+        var scrollTop =
+          window.pageYOffset ||
+          document.documentElement.scrollTop ||
+          document.body.scrollTop
+        console.log('changeScroll -> scrollTop', scrollTop)
+        // 判断筛选条件是否显示
+        this.fixedHeader = scrollTop > 200 ? true : false
+      },
+    },
   }
 </script>
 
@@ -94,174 +114,39 @@
     display: block;
     overflow: hidden;
   }
-  #content {
-    margin: 30px auto;
-    width: 960px;
-    overflow: hidden;
-    display: flex;
-    .info {
-      font-size: 12px;
-      color: #999;
-      margin-bottom: 20px;
-    }
-    .main {
-      background-color: #fff;
-      width: 650px;
-      padding: 20px;
-      border-radius: 5px;
-      box-sizing: border-box;
-      text-align-last: left;
-      h2,
-      h3 {
-        margin-top: 20px;
-      }
-      img,
-      figure,
-      image {
-        text-align: center;
-        display: inherit;
-        margin: 0 auto;
-      }
-      blockquote {
-        padding: 20px 0 20px 20px;
-        margin: 20px 0;
-        background-color: #ebebeb;
-        border-left: 2px solid $danger;
-        p {
-          margin-bottom: 0;
-        }
-      }
-      p code {
-        background-color: #dcd7ca;
-        background: rgba(0, 0, 0, 0.075);
-        border-radius: 0.2rem;
-        font-family: monospace;
-        font-size: 0.9em;
-        padding: 0.4rem 0.6rem;
-      }
-      li {
-        line-height: 1.8em;
-        position: relative;
-        padding-left: 1em;
-        &:before {
-          content: '';
-          width: 4px;
-          height: 2px;
-          background-color: $primary;
-          position: absolute;
-          left: 2px;
-          top: 50%;
-          transform: translateY(-50%);
-        }
-      }
-      pre code {
-        font-family: source;
-        margin: 20px 0;
-        padding: 10px;
-        font-size: 14px;
-        white-space: pre-wrap;
-        border-radius: 5px;
-      }
-      strong,
-      h2,
-      h1,
-      h3,
-      p {
-        margin-bottom: 20px;
-      }
-      strong {
-        display: block;
-      }
-      p {
-        margin-bottom: 20px;
-        word-break: break-word;
-        margin-top: 0;
-        font-weight: 400;
-        line-height: 1.8;
-        font-size: 16px;
-        color: #404040;
-      }
-    }
-    .secondary {
-      flex: 1;
-      margin-left: 20px;
-      .item {
-        background-color: #fff;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        padding: 10px;
-        .title {
-          font-size: 16px;
-          padding-left: 6px;
-          border-left: 4px solid #ec7259;
-          margin-bottom: 16px;
-          text-align-last: left;
-        }
-        .list {
-          text-align: left;
-          img {
-            width: 100%;
-            border: 1px solid #f9f9f9;
-            border-width: 1px;
-          }
-          li {
-            margin-bottom: 20px;
-          }
-          li,
-          a {
-            font-size: 16px;
-            color: #2d2d2d;
-            line-height: 1.6em;
-            .excerpt {
-              padding-top: 5px;
-              font-size: 12px;
-              color: #2d2d2d;
-              line-height: 1.4em;
-            }
-          }
-          a:hover {
-            color: $primary;
-          }
-        }
-      }
-    }
-  }
+  
   .left-tool {
     position: fixed;
     left: 50%;
     margin-left: -580px;
     top: 90px;
-    font-family: monospace;
     width: 80px;
     text-align: center;
-    .year {
-      position: relative;
-      color: #777;
-      font-size: 18px;
-      span {
-        display: inline-block;
-        background: #f9f9f9;
-        padding: 0 5px;
-      }
-      &:after {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 1px;
-        background: #777;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        z-index: -1;
-      }
+  }
+  .header-fixed {
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    height: 60px;
+    line-height: 60px;
+    background: #373938;
+    z-index: 999;
+    .content {
+      width: 960px;
+      margin: 0 auto;
+      text-align: left;
     }
-    .md {
-      font-size: 40px;
-      color: #777;
+    h1 {
+      font-weight: normal;
+      font-size: 24px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .time {
-      font-size: 14px;
-      color: #999;
+    * {
+      color: #fff;
     }
   }
 </style>

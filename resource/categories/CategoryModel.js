@@ -28,11 +28,6 @@ export default class CategoryModel {
     Object.assign(this, category);
     return this;
   }
-  async fetchNovelMeta () {
-    const category = await wp.novelCategories().id(this.id);
-    Object.assign(this, category);
-    return this;
-  }
   isValidCategory (data) {
     return data.id && data.name;
   }

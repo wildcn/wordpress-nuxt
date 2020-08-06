@@ -6,6 +6,7 @@ export default class TagModel {
   name = null;
 
   constructor(args) {
+    console.log("TagModel -> constructor -> args", args)
     return new Promise((resolve, reject) => {
       if (isInteger(args)) {
         this.id = args;
@@ -23,6 +24,7 @@ export default class TagModel {
   }
   async fetchMeta () {
     try {
+      console.log("TagModel -> fetchMeta -> this.id", this.id)
       const response = await wp.tags().id(this.id);
       console.log("TagModel -> fetchMeta -> response", response)
       if (this.isValidTag(response)) {

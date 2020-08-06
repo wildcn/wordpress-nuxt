@@ -10,7 +10,6 @@ export const _fields = {
   [TYPES.POSTS]: [
     'author',
     'categories',
-    'novel_category',
     'date',
     'excerpt',
     'featured_media',
@@ -18,7 +17,6 @@ export const _fields = {
     'link',
     'meta',
     'tags',
-    'novel_tag',
     'title',
     'type'
   ],

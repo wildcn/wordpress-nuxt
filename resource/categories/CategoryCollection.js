@@ -1,7 +1,6 @@
 import { MediaModel } from '../media';
 import wp from '../../plugins/wpapi';
 import CategoryModel from './CategoryModel';
-import { NovelCategoryModel } from './';
 
 const categoryId = Symbol();
 let categoryCollection = null;
@@ -21,13 +20,10 @@ export default class CategoryCollection {
     return categoryCollection;
   }
   async fetchList () {
-    const categories = await wp.categories();
-    const novelCategories = await wp.novelCategories();
-
+    const categories = await wp.categories().param('per_page', 100)
     const categoriesList = await Promise.complete(categories.map(async tag => await new CategoryModel(tag)));
-    const novelCategoriesList = await Promise.complete(novelCategories.map(async tag => await new NovelCategoryModel(tag)));
 
-    this.list = [].concat(categoriesList, novelCategoriesList)
+    this.list = categoriesList
     return this.list
   }
   async fetchMap () {
@@ -38,13 +34,14 @@ export default class CategoryCollection {
     return this.mapList;
   }
   async fetchRootCategories () {
-    if (!this.list.length) {
-      await this.fetchList();
-    }
-    const root = this.list.filter(model => {
-      return model.parent === 0
-    })
-    return root;
+    const rootCategories = await wp.categories().order('asc').orderby('id').param('per_page', 100).param('parent', 0);
+    return rootCategories;
+  }
+  async fetchCategoriesByRootId (id) {
+    const root = await wp.categories().id(id);
+    const children = await wp.categories().param('parent', id);
+    const response = await Promise.complete([].concat(root, children).map(async item => await new CategoryModel(item)));
+    return response;
   }
 }
 

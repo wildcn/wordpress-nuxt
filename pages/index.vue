@@ -25,28 +25,33 @@
   export default {
     async mounted(ctx) {
       try {
+        const param = {
+          per_page: 10,
+          page: 1,
+        }
+        // 获取栏目列表
         const categoryMapList = await categoryCollection.fetchMap()
+        // 获取标签
         const tagMapList = await tagCollection.fetchMap()
+        // 获取评论
         const commentMapList = await commentCollection.fetchMap()
-
-        // 获取列表
-
+        // 获取文章列表
         const posts = await Promise.complete(
-          []
-            .concat(await $wp.posts(), await $wp.novel())
-            .map(async (id) => await new PostModel(id))
+          [].concat(await $wp.posts()).map(async (id) => await new PostModel(id))
         )
         // 获取标签
         this.posts = posts
         this.categoryMapList = categoryMapList
         this.tagMapList = tagMapList
         this.commentMapList = commentMapList
+        // this.rootCategories = rootCategories;
 
         return {
           posts,
           categoryMapList,
           tagMapList,
           commentMapList,
+          // rootCategories
         }
       } catch (err) {
         console.log('Data -> err', err)
@@ -55,6 +60,7 @@
           tagMapList: [],
           categoryMapList: [],
           commentMapList: [],
+          rootCategories: [],
         }
       }
     },
@@ -69,24 +75,6 @@
     components: {
       PostList,
       Card,
-    },
-    methods: {
-      async fetchPosts(ctx) {
-        try {
-          const posts = await ctx.$wp.posts()
-          const novel = await ctx.$wp.novel()
-          const result = []
-            .concat(posts, novel)
-            .map((post) => new PostModel(post))
-          return {
-            posts: result,
-          }
-        } catch (err) {
-          return {
-            posts: [],
-          }
-        }
-      },
     },
   }
 </script>

@@ -1,7 +1,9 @@
-@import './var.scss';
-a{
+@import "./var.scss";
+@import "./article.scss";
+@import "./animation.scss";
+a {
   text-decoration: none;
-  &:hover{
+  &:hover {
     color: $primary;
   }
 }

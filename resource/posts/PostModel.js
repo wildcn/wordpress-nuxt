@@ -1,6 +1,6 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
-import { CategoryModel, NovelCategoryModel, CategoryCollection } from '../categories';
-import { TagModel, NovelTagModel, TagCollection } from '../tags';
+import { CategoryModel, CategoryCollection } from '../categories';
+import { TagModel, TagCollection } from '../tags';
 import { MediaModel } from '../media';
 import { CommentModel, CommentCollection } from '../comments';
 import wp from '../../plugins/wpapi';
@@ -31,7 +31,6 @@ export default class PostsModel {
         })
       } else if (isPlainObject(args) && this.isValidPost(args)) {
         Object.assign(this, args);
-        // 初始化novel相关字段
         this.init().then(() => {
           resolve(this);
         })
@@ -48,11 +47,10 @@ export default class PostsModel {
       await this.fetchTags();
       return this;
     } catch (err) {
-      console.log("PostsModel -> init -> err", err)
     }
   }
-  async fetchContent(){
-    const response = await wp.posts({_fields:'content'}).id(this.id);
+  async fetchContent () {
+    const response = await wp.posts({ _fields: 'content' }).id(this.id);
     if (response.content) {
       this.content = response.content;
     }
@@ -68,9 +66,7 @@ export default class PostsModel {
   }
 
   async fetchCategories () {
-    this.categories = this.categories || [];
-    this.novel_category = this.novel_category || [];
-    const categories = [].concat(this.categories, this.novel_category)
+    const categories = this.categories || [];
     if (categories.length) {
       this.categoriesCollection = await Promise.complete(categories.map(async id => {
         if (categoriesCol.mapList[id]) {
@@ -81,17 +77,17 @@ export default class PostsModel {
     }
   }
   async fetchTags () {
-    this.tags = this.tags || [];
-    this.novel_tag = this.novel_tag || [];
-    const tags = [].concat(this.tags, this.novel_tag);
-    this.tagsCollection = await Promise.complete(tags.map(async id => {
-      if (tagCol.mapList[id]) {
-        console.log("PostsModel -> fetchTags -> id", id)
-        return tagCol.mapList[id];
-      }
-      return new TagModel(id)
-    }))
-    console.log("PostsModel -> fetchTags -> tagsCollection", this.tagsCollection)
+    const tags = this.tags || [];
+    try {
+      this.tagsCollection = await Promise.complete(tags.map(async id => {
+        if (tagCol.mapList[id]) {
+          return tagCol.mapList[id];
+        }
+        const response = await new TagModel(id);
+        return response
+      }))
+    } catch (err) {
+    }
   }
   async fetchMedias () {
     const media = this.media || [];
@@ -106,9 +102,8 @@ export default class PostsModel {
   async fetchComments () {
     if (commentCol.postMapList && commentCol.postMapList[this.id]) {
       this.commentsCollection = commentCol.postMapList[this.id]
-    }else{
+    } else {
       const commentIds = await wp.comments().post(this.id).get();
-      console.log("PostsModel -> fetchComments -> commentIds", commentIds)
     }
   }
   isValidPost (data) {

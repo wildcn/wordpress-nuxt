@@ -1,6 +1,6 @@
 import wp from '../../plugins/wpapi';
 import PostModel from './PostModel';
-import { _fields } from './constants';
+import { isEmpty } from 'lodash';
 import {
   CategoryCollection
 } from '../../resource';
@@ -22,12 +22,12 @@ export default class PostCollection {
 
     return postCollection;
   }
-  async fetchList () {
-    const posts = await wp.posts()
-    const novel = await wp.novel()
-    const list = [].concat(posts, novel).map((item) => new PostModel(item))
+  async fetchList (paramKey, paramVal) {
+    const posts = paramKey?await wp.posts().param(paramKey, paramVal):await wp.posts();
+    console.log("PostCollection -> fetchList -> posts", posts)
+    const list = await Promise.complete(posts.map(async (item) => await new PostModel(item)))
+    this.list = list;
     return list;
   }
-
 }
 

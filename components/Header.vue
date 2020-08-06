@@ -3,7 +3,7 @@
     <div class="content">
       <div class="menu">
         <li v-for="(item,index) in rootCategories" :key="index">
-          <a :href="item.link">{{item.name}}</a>
+          <a :href="`/category/${item.id}`">{{item.name}}</a>
         </li>
       </div>
     </div>
@@ -22,8 +22,10 @@
       }
     },
     async mounted() {
-      console.log("mounted -> this.categoryCollection", this.categoryCollection)
-      this.rootCategories = await this.categoryCollection.fetchRootCategories()
+      console.log('mounted -> this.categoryCollection', this.categoryCollection)
+      this.rootCategories = (
+        await this.categoryCollection.fetchRootCategories()
+      )
     },
   }
 </script>
