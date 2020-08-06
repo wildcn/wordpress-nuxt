@@ -1,4 +1,3 @@
-import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
 import wp from '../../plugins/wpapi';
 import TagModel from './TagModel';
 import NovelTagModel from './NovelTagModel';
@@ -7,7 +6,8 @@ const tagId = Symbol();
 let categoryCollection = null;
 
 export default class TagCollection {
-  map = undefined;
+  map = {};
+  list = [];
   requestStatus = false;
   constructor(id) {
     if (id !== tagId) {
@@ -25,7 +25,7 @@ export default class TagCollection {
     if (this.requestStatus) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          resolve(TagCollection.getTagModel(id, novel));
+          resolve(TagCollection.getInstance().getTagModel(id, novel));
         }, 1000);
       })
     }
@@ -41,11 +41,24 @@ export default class TagCollection {
   }
   async fetchList () {
     const novelTags = await wp.novelTags();
-    const tags = await wp.tags()
-    this.map = [].concat(novelTags, tags).reduce((pre, next) => {
-      pre[next.id] = new TagModel(next);
+    const tags = await wp.tags();
+
+    const novelTagsList = await Promise.complete(novelTags.map(async tag => await new NovelTagModel(tag)));
+    const tagsList = await Promise.complete(tags.map(async tag=>await new TagModel(tag)));
+
+    
+    this.list = [].concat(novelTagsList, tagsList);
+  }
+  async fetchMap () {
+    if (!this.list.length) {
+      await this.fetchList();
+    }
+    this.mapList = await this.list.reduce(async (pre, next) => {
+      pre = await pre;
+      pre[next.id] = next;
       return pre;
     }, {})
+    return this.mapList;
   }
 }
 

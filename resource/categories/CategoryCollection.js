@@ -1,16 +1,16 @@
-import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
 import { MediaModel } from '../media';
 import wp from '../../plugins/wpapi';
 import CategoryModel from './CategoryModel';
+import { NovelCategoryModel } from './';
 
 const categoryId = Symbol();
 let categoryCollection = null;
 
 export default class CategoryCollection {
-
+  list = [];
   constructor(id) {
     if (id !== categoryId) {
-      throw new Error(`Can not create a WbItemCollection instance.`);
+      throw new Error(`Can not create a CategoryCollection instance.`);
     }
   }
   static getInstance () {
@@ -20,16 +20,28 @@ export default class CategoryCollection {
 
     return categoryCollection;
   }
-  async fetchCategories () {
+  async fetchList () {
     const categories = await wp.categories();
     const novelCategories = await wp.novelCategories();
-    this.categoriesModel = await Promise.all([].concat(categories,novelCategories).map(async item => new CategoryModel(item)));
+
+    const categoriesList = await Promise.complete(categories.map(async tag => await new CategoryModel(tag)));
+    const novelCategoriesList = await Promise.complete(novelCategories.map(async tag => await new NovelCategoryModel(tag)));
+
+    this.list = [].concat(categoriesList, novelCategoriesList)
+    return this.list
   }
-  fetchRootCategories () {
-    if (!this.categoriesModel.length) {
-      return [];
+  async fetchMap () {
+    if (!this.list.length) {
+      await this.fetchList();
     }
-    const root = this.categoriesModel.filter(model => {
+    this.mapList = this.list.reduce((pre, next) => Object.assign(pre, { [next.id]: next }), {})
+    return this.mapList;
+  }
+  async fetchRootCategories () {
+    if (!this.list.length) {
+      await this.fetchList();
+    }
+    const root = this.list.filter(model => {
       return model.parent === 0
     })
     return root;

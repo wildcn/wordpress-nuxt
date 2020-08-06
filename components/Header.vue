@@ -22,8 +22,8 @@
       }
     },
     async mounted() {
-      await this.categoryCollection.fetchCategories()
-      this.rootCategories = this.categoryCollection.fetchRootCategories()
+      console.log("mounted -> this.categoryCollection", this.categoryCollection)
+      this.rootCategories = await this.categoryCollection.fetchRootCategories()
     },
   }
 </script>
@@ -39,7 +39,7 @@
     border-bottom: 1px solid #f0f0f0;
     height: 60px;
     line-height: 60px;
-    background: #fff;
+    background: #373938;
     z-index: 999;
     .content {
       min-width: 768px;
@@ -67,7 +67,7 @@
         padding-left: 0;
       }
       a {
-        color: #333;
+        color: #f1f1f1;
         &:hover {
           color: $primary;
         }

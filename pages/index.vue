@@ -1,43 +1,74 @@
 <template>
-  <div class="container">
-    <dlq-header></dlq-header>
-    <div class="content">
-      <post-list v-model="posts" class="main"></post-list>
-      <div class="secondary">
-        <card></card>
-      </div>
+  <div class="content">
+    <post-list v-model="posts" class="main"></post-list>
+    <div class="secondary">
+      <card></card>
     </div>
   </div>
 </template>
 
 <script>
   import PostList from '../components/PostList'
-  import Header from '../components/Header'
   import Card from '../components/Card'
-  import $wp from '~/plugins/wpapi';
-  import { PostModel } from '~/resource'
+  import $wp from '~/plugins/wpapi'
+  import {
+    PostModel,
+    TagCollection,
+    CategoryCollection,
+    CommentCollection,
+  } from '../resource'
 
+  const tagCollection = TagCollection.getInstance()
+  const categoryCollection = CategoryCollection.getInstance()
+  const commentCollection = CommentCollection.getInstance()
 
   export default {
-    async asyncData(ctx) {
+    async mounted(ctx) {
       try {
-        const posts = await $wp.posts()
-        const novel = await $wp.novel()
-        const result = [].concat(posts, novel).map((post) => new PostModel(post))
+        const categoryMapList = await categoryCollection.fetchMap()
+        const tagMapList = await tagCollection.fetchMap()
+        const commentMapList = await commentCollection.fetchMap()
+
+        // 获取列表
+
+        const posts = await Promise.complete(
+          []
+            .concat(await $wp.posts(), await $wp.novel())
+            .map(async (id) => await new PostModel(id))
+        )
+        // 获取标签
+        this.posts = posts
+        this.categoryMapList = categoryMapList
+        this.tagMapList = tagMapList
+        this.commentMapList = commentMapList
+
         return {
-          posts: result,
+          posts,
+          categoryMapList,
+          tagMapList,
+          commentMapList,
         }
       } catch (err) {
-        console.log("Data -> err", err)
+        console.log('Data -> err', err)
         return {
           posts: [],
+          tagMapList: [],
+          categoryMapList: [],
+          commentMapList: [],
         }
+      }
+    },
+    data() {
+      return {
+        posts: [],
+        tagMapList: [],
+        categoryMapList: [],
+        commentMapList: [],
       }
     },
     components: {
       PostList,
       Card,
-      'dlq-header': Header,
     },
     methods: {
       async fetchPosts(ctx) {
@@ -61,19 +92,11 @@
 </script>
 
 <style lang="scss" scoped>
-  .container {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin-top: 60px;
-  }
   .content {
-    margin: 960px;
     margin: 0 auto;
     overflow: hidden;
     display: flex;
+    width: 960px;
     .main,
     .secondary {
       display: inline-block;

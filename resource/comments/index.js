@@ -1,5 +1,7 @@
 import CommentModel from './CommentModel';
+import CommentCollection from './CommentCollection';
 
 export {
-  CommentModel
+  CommentModel,
+  CommentCollection
 }

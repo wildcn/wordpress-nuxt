@@ -19,6 +19,7 @@
       <div class="repos" v-show="repos.length">
         <li v-for="(item,index) in repos" :key="index">
           <a :href="item.html_url" target="_blank">{{item.name}}</a>
+          <div class="description" v-show="item.description">{{item.description}}</div>
           <div class="info">
             <span class="language" v-show="item.language">
               <i class="iconfont icon-language"></i>
@@ -112,7 +113,7 @@
   }
   .achievements {
     .github {
-      font-size: 14px;
+      font-size: 16px;
       color: $primary;
       font-style: italic;
       a {
@@ -127,32 +128,47 @@
       padding: 0px;
       text-align: left;
       overflow-y: scroll;
-      height: 300px;
-      a {
-        color: #333;
-      }
+      height: 500px;
       li {
         padding: 8px;
-        border-bottom: 1px solid #f1f1f1;
         border-radius: 2px;
-        &:nth-child(2n) {
-          background-color: #eee;
+        border-bottom: 1px solid #ebebeb;
+        a {
+          display: block;
+          font-size: 18px;
+          color: #333;
+          margin-bottom: 5px;
         }
+
         &:hover {
           cursor: pointer;
           * {
-            color: #fff;
+            color: $primary;
           }
-          background-color: $primary;
         }
         i {
           font-size: 14px;
         }
-        .info {
-          padding-top: 5px;
+        .description {
           font-size: 12px;
           color: #999;
-          line-height: 1em;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+        .info span {
+          margin-top: 5px;
+          font-size: 10px;
+          font-weight: 500;
+          border: 1px solid transparent;
+          border-radius: 9px;
+          padding: 0 10px;
+          display: inline-block;
+          line-height: 22px;
+          background-color: #f1f8ff;
+          color: #0366d6;
         }
       }
     }

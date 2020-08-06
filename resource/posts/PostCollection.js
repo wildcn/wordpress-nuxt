@@ -1,4 +1,3 @@
-import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
 import wp from '../../plugins/wpapi';
 import PostModel from './PostModel';
 import { _fields } from './constants';
@@ -13,12 +12,12 @@ export default class PostCollection {
 
   constructor(id) {
     if (id !== categoryId) {
-      throw new Error(`Can not create a WbItemCollection instance.`);
+      throw new Error(`Can not create a PostCollection instance.`);
     }
   }
   static getInstance () {
     if (postCollection === null) {
-      postCollection = new CategoryCollection(categoryId);
+      postCollection = new PostCollection(categoryId);
     }
 
     return postCollection;

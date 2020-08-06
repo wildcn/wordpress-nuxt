@@ -2,8 +2,13 @@
   <div class="post-list">
     <ul>
       <li v-for="(item,index) in posts" :key="index">
+        <div
+          class="wrap-media"
+          v-show="item.featuredMediaModel.id"
+          :style="{'background-image':'url('+item.featuredMediaModel.source_url+')'}"
+        ></div>
         <div class="content">
-          <a :href="item.link" class="title" v-html="item.title.rendered"></a>
+          <a :href="`/posts/${item.id}`" class="title" v-html="item.title.rendered"></a>
           <div class="abstract" v-html="item.excerpt.rendered"></div>
           <div class="media">
             <span class="tags category" v-show="item.categoriesCollection.length">
@@ -22,17 +27,12 @@
                 :key="idx"
               >{{item.name}}</a>
             </span>
-            <span class="comment">
+            <span class="comment" v-show="item.commentsCollection.length">
               <i class="iconfont icon-comment"></i>
               {{item.commentsCollection.length}}
             </span>
           </div>
         </div>
-        <div
-          class="wrap-media"
-          v-show="item.featuredMediaModel.id"
-          :style="{'background-image':'url('+item.featuredMediaModel.source_url+')'}"
-        ></div>
       </li>
     </ul>
   </div>
@@ -42,13 +42,17 @@
   import { PostCollection } from '~/resource'
   export default {
     props: {
-      value: Array|Object,
+      value: Array | Object,
     },
     data() {
       return {
-        posts: this.value,
-        postCollection:PostCollection.getInstance()
+        postCollection: PostCollection.getInstance(),
       }
+    },
+    computed: {
+      posts() {
+        return this.value.sort((a, b) => +new Date(b.date) - +new Date(a.date))
+      },
     },
   }
 </script>
@@ -79,6 +83,7 @@
       height: 100px;
       overflow: hidden;
       border-radius: 4px;
+      margin-right: 20px;
       border: 1px solid #f0f0f0;
       align-items: center;
       vertical-align: middle;

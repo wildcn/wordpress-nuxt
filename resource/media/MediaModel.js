@@ -8,24 +8,29 @@ export default class MediaModel {
   media_details = {};
 
   constructor(args) {
-    if (isInteger(args)) {
-      this.id = args;
-      this.fetchMeta();
-    } else if (isPlainObject(args) && this.isValidMedia(args)) {
-      Object.assign(this, args);
-    } else {
-      throw new Error('MediaModel args is invalid');
-    }
-  }
-  fetchMeta () {
-    wp.media().id(this.id).then(response => {
-      if (this.isValidMedia(response)) {
-        Object.assign(this, response);
+    return new Promise((resolve, reject) => {
+      if (isInteger(args)) {
+        this.id = args;
+        this.fetchMeta().then(() => {
+          resolve(this);
+        })
+      } else if (isPlainObject(args) && this.isValidMedia(args)) {
+        Object.assign(this, args);
+        resolve(this)
+      } else {
+        reject('MediaModel args is invalid')
+        // throw new Error('MediaModel args is invalid');
       }
     })
   }
+  async fetchMeta () {
+    const response = await wp.media().id(this.id);
+    if (this.isValidMedia(response)) {
+      Object.assign(this, response);
+    }
+  }
   isValidMedia (data) {
-    return data.id && data.source_url && data.mime_type;
+    return data.id && data.source_url;
   }
 }
 

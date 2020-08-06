@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "source-light"; /* project id 1979540 */
+  src: url("./font//SourceCodePro-ExtraLight.ttf") format("truetype"),
+    url("./font/SourceCodePro-ExtraLight-for-Powerline.otf");
+}
+
+@font-face {
+  font-family: "source"; /* project id 1979540 */
+  src: url("./font/SourceCodePro-Regular.ttf") format("truetype")
+}
+
+
+.font-source {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -4,21 +4,27 @@ import wp from '../../plugins/wpapi';
 export default class TagModel {
   id = null;
   name = null;
-  slug = null;
 
   constructor(args) {
-    if (isInteger(args)) {
-      this.id = args;
-      this.fetchMeta();
-    } else if (isPlainObject(args) && this.isValidTag(args)) {
-      Object.assign(this, args);
-    } else {
-      throw new Error('TagModel args is invalid');
-    }
+    return new Promise((resolve, reject) => {
+      if (isInteger(args)) {
+        this.id = args;
+        this.fetchMeta().then(() => {
+          resolve(this);
+        })
+      } else if (isPlainObject(args) && this.isValidTag(args)) {
+        Object.assign(this, args);
+        resolve(this)
+      } else {
+        reject('TagModel args is invalid')
+        // throw new Error('TagModel args is invalid');
+      }
+    })
   }
   async fetchMeta () {
     try {
       const response = await wp.tags().id(this.id);
+      console.log("TagModel -> fetchMeta -> response", response)
       if (this.isValidTag(response)) {
         Object.assign(this, response);
       }
@@ -26,7 +32,7 @@ export default class TagModel {
       console.error(err)
     }
   }
-  
+
   isValidTag (data) {
     return data.id && data.name;
   }

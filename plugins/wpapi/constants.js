@@ -42,7 +42,8 @@ export const _fields = {
     'id',
     'link',
     'name',
-    'taxonomy'
+    'taxonomy',
+    'parent'
   ],
   [TYPES.COMMENTS]: [
     'author',
@@ -50,6 +51,7 @@ export const _fields = {
     'id',
     'date',
     'link',
-    'content'
+    'content',
+    'post'
   ]
 }
