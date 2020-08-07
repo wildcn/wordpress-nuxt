@@ -1,16 +1,20 @@
 <template>
   <div class="page-category">
-    <div class="list">
-      <div class="column" v-for="(val,key,index) in postsByCategories" :key="index">
-        <div class="title">{{categoriesMap[key].name}}</div>
-        <ul>
-          <li v-for="(item,idx) in val" :key="idx">
-            <a :href="`/posts/${item.id}`">{{item.title.rendered}}</a>
-            <p class="info" v-html="item.excerpt.rendered"></p>
-            <el-tag  size="mini" v-for="(tag,itag) in item.tagsCollection" :key="itag" v-show="item.tagsCollection.length">{{tag.name}}</el-tag>
-          </li>
-        </ul>
-      </div>
+    <div class="column" v-for="(val,key,index) in postsByCategories" :key="index">
+      <div v-if="categoriesMap[key] && categoriesMap[key].name" class="title">{{categoriesMap[key].name}}</div>
+      <ul>
+        <li v-for="(item,idx) in val" :key="idx">
+          <a :href="`/posts/${item.id}`">{{item.title.rendered}}</a>
+          <p class="info" v-html="item.excerpt.rendered"></p>
+          <el-tag
+            class="tag"
+            size="mini"
+            v-for="(tag,itag) in item.tagsCollection"
+            :key="itag"
+            v-show="item.tagsCollection.length"
+          >{{tag.name}}</el-tag>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -22,15 +26,21 @@
   const categoryCollection = CategoryCollection.getInstance()
   const postCollection = PostCollection.getInstance()
   export default {
+    name:'category',
     async asyncData(ctx) {
-      const id = +ctx.params.id
-      const categories = await categoryCollection.fetchCategoriesByRootId(id)
+      try {
+        const id = +ctx.params.id
+        const categories = await categoryCollection.fetchCategoriesByRootId(id)
 
-      const ids = categories.map((item) => item.id)
-      const posts = await postCollection.fetchList('categories', ids)
-      return {
-        posts,
-        categories,
+        const ids = categories.map((item) => item.id)
+        const posts = await postCollection.fetchList({ categories: ids })
+        
+        return {
+          posts,
+          categories,
+        }
+      } catch (err) {
+        console.log('Data -> err', err)
       }
     },
     data() {
@@ -64,16 +74,17 @@
   .page-category {
     margin: 20px auto;
     width: 960px;
-    .list {
-      display: flex;
-    }
+    min-height: 600px;
+    
     .column {
-      width: 470px;
+      width: 460px;
+      float:left;
       background-color: #fff;
       border-radius: 5px;
       text-align: left;
       padding: 10px 20px;
       box-sizing: border-box;
+      margin-bottom: 20px;
       &:nth-child(n) {
         margin-right: 10px;
       }
@@ -98,6 +109,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      .tag {
+        margin-right: 5px;
       }
       li a {
         line-height: 24px;

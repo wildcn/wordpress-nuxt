@@ -35,11 +35,20 @@
         </div>
       </li>
     </ul>
+    <el-button
+      size="medium"
+      plain
+      :disabled="noData"
+      v-show="posts.length"
+      class="more"
+      @click="more"
+    >{{noData?'暂无更多数据':'加载更多'}}</el-button>
   </div>
 </template>
 
 <script>
   import { PostCollection } from '~/resource'
+
   export default {
     props: {
       value: Array | Object,
@@ -47,11 +56,24 @@
     data() {
       return {
         postCollection: PostCollection.getInstance(),
+        noData: false,
       }
     },
     computed: {
       posts() {
-        return this.value.sort((a, b) => +new Date(b.date) - +new Date(a.date))
+        return this.value
+      },
+    },
+    methods: {
+      more() {
+        this.postCollection
+          .more()
+          .then(() => {
+            this.$emit('input', this.postCollection.list)
+          })
+          .catch((err) => {
+            this.noData = true
+          })
       },
     },
   }
@@ -61,6 +83,7 @@
   @import '~@/styles/var.scss';
   .post-list {
     width: 100%;
+    margin-bottom: 30px;
   }
   .post-list ul li {
     text-align: left;
@@ -71,6 +94,7 @@
     border-bottom: 1px solid #f0f0f0;
     line-height: 20px;
     display: flex;
+    box-sizing: border-box;
     a:hover {
       text-decoration: underline;
       color: $primary;
@@ -106,6 +130,16 @@
       font-size: 13px;
       line-height: 20px;
       color: #999;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      p {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+      }
     }
     .media {
       color: #b4b4b4;
@@ -126,5 +160,10 @@
     .category a {
       color: $primary;
     }
+  }
+  .more {
+    width: 100%;
+    display: block;
+    cursor: pointer;
   }
 </style>

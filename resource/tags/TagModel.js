@@ -1,12 +1,11 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
-import wp from '../../plugins/wpapi';
+import wp, { wps } from '../../plugins/wpapi';
 
 export default class TagModel {
   id = null;
   name = null;
 
   constructor(args) {
-    console.log("TagModel -> constructor -> args", args)
     return new Promise((resolve, reject) => {
       if (isInteger(args)) {
         this.id = args;
@@ -24,9 +23,7 @@ export default class TagModel {
   }
   async fetchMeta () {
     try {
-      console.log("TagModel -> fetchMeta -> this.id", this.id)
       const response = await wp.tags().id(this.id);
-      console.log("TagModel -> fetchMeta -> response", response)
       if (this.isValidTag(response)) {
         Object.assign(this, response);
       }
@@ -36,7 +33,7 @@ export default class TagModel {
   }
 
   isValidTag (data) {
-    return data.id && data.name;
+    return data && data.id && data.name;
   }
 }
 

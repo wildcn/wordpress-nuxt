@@ -14,6 +14,7 @@
   import Header from '../components/Header'
   import DlqFooter from '../components/DlqFooter'
   export default {
+    middleware: 'categories',
     components: {
       DlqHeader: Header,
       DlqFooter,
@@ -41,7 +42,7 @@
     overflow: hidden;
     display: flex;
   }
-  .top i{
+  .top i {
     font-size: 30px;
   }
 </style>

@@ -13,10 +13,8 @@ export default class BaseCollection {
     }
     return baseCollection;
   }
-  async fetchMap () {
-    if (!this.list.length) {
-      await this.fetchList();
-    }
+ async fetchMap (options) {
+    
     this.mapList = this.list.reduce((pre, next) => Object.assign(pre, { [next.id]: next }), {})
     return this.mapList;
   }

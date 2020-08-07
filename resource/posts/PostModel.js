@@ -1,15 +1,16 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
 import { CategoryModel, CategoryCollection } from '../categories';
 import { TagModel, TagCollection } from '../tags';
-import { MediaModel } from '../media';
+import { MediaModel, MediaCollection } from '../media';
 import { CommentModel, CommentCollection } from '../comments';
-import wp from '../../plugins/wpapi';
+import wp, { wps } from '../../plugins/wpapi';
 
 
 
 const tagCol = TagCollection.getInstance();
 const categoriesCol = CategoryCollection.getInstance();
 const commentCol = CommentCollection.getInstance();
+const mediaCol = MediaCollection.getInstance();
 
 export default class PostsModel {
   id = null;
@@ -42,19 +43,23 @@ export default class PostsModel {
   async init () {
     try {
       await this.fetchCategories();
-      await this.fetchComments();
       await this.fetchMedias();
       await this.fetchTags();
+      // await this.fetchComments();
       return this;
     } catch (err) {
     }
   }
   async fetchContent () {
-    const response = await wp.posts({ _fields: 'content' }).id(this.id);
-    if (response.content) {
-      this.content = response.content;
+    try {
+      const response = await wp.posts({ _fields: 'content' }).id(this.id);
+      if (response.content) {
+        this.content = response.content;
+      }
+      return response.content;
+    } catch (err) {
+      console.log(err)
     }
-    return response.content;
   }
   async fetchMeta () {
     const response = await wp.posts().id(this.id);
@@ -84,18 +89,30 @@ export default class PostsModel {
           return tagCol.mapList[id];
         }
         const response = await new TagModel(id);
-        return response
+        if (response.name) {
+          return response
+        }
+        throw new Error(response);
       }))
     } catch (err) {
     }
   }
   async fetchMedias () {
-    const media = this.media || [];
+    let media = this.media || [];
     if (isInteger(this.featured_media) && this.featured_media !== 0) {
-      this.featuredMediaModel = await new MediaModel(this.featured_media);
+      media = [].concat(media, this.featured_media);
     }
     if (media.length) {
-      this.mediaCollection = await Promise.complete(media.map(async id => await new MediaModel(id)));
+      this.mediaCollection = await Promise.complete(media.map(async id => {
+        const response = mediaCol.mapList[id] || await new MediaModel(id);
+        if (response.id === this.featured_media) {
+          this.featuredMediaModel = response;
+        }
+        if (response.source_url) {
+          return response
+        }
+        throw new Error(response);
+      }));
     }
 
   }
@@ -103,7 +120,7 @@ export default class PostsModel {
     if (commentCol.postMapList && commentCol.postMapList[this.id]) {
       this.commentsCollection = commentCol.postMapList[this.id]
     } else {
-      const commentIds = await wp.comments().post(this.id).get();
+      const commentIds = await wps.comments.post(this.id);
     }
   }
   isValidPost (data) {

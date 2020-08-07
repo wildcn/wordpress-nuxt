@@ -17,7 +17,7 @@ export default {
   ** See https://nuxtjs.org/api/configuration-head
   */
   head: {
-    title: '杜连强/创作之旅',
+    title: '合生——杜连强的博客',
     description: '杜连强 前端工程师 网文爱好者',
     meta: [
       { charset: 'utf-8' },
@@ -27,18 +27,20 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', 'data-n-head': true, href: 'https://cdn.bootcdn.net/ajax/libs/highlight.js/10.1.2/styles/androidstudio.min.css' },
-      { rel: 'stylesheet', 'data-n-head': true, href: 'https://unpkg.com/element-ui/lib/theme-chalk/index.css' }
+      { rel: 'stylesheet', 'data-n-head': true, href: 'https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css' }
     ],
     script: [{
       src: 'https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js',
     }, {
       src: 'http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
     }, {
-      src: 'https://unpkg.com/element-ui/lib/index.js'
+      src: 'https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js'
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.js',
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/lodash.js/4.17.15/lodash.min.js',
+    }, {
+      src: 'https://hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4'
     }]
   },
   /*

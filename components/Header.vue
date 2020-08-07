@@ -2,30 +2,74 @@
   <div class="nav">
     <div class="content">
       <div class="menu">
-        <li v-for="(item,index) in rootCategories" :key="index">
-          <a :href="`/category/${item.id}`">{{item.name}}</a>
-        </li>
+        <el-menu
+          mode="horizontal"
+          background-color="#373938"
+          :menu-trigger="menuTrigger"
+          active-text-color="#ffffff"
+          unique-opened
+        >
+          <el-menu-item index="/">
+            <nuxt-link to="/">HOME</nuxt-link>
+          </el-menu-item>
+          <component
+            :is="item.children?'el-submenu':'el-menu-item'"
+            v-for="(item,index) in categories"
+            :key="index"
+            :index="`/category/${item.id}`"
+          >
+            <template v-if="item.children" slot="title">
+              <nuxt-link :to="`/category/${item.id}`">{{item.name}}</nuxt-link>
+            </template>
+            <el-menu-item
+              v-show="item.children"
+              v-for="(child,idx) in item.children"
+              :key="idx"
+              :index="`/category/${child.id}`"
+            >
+              <nuxt-link :to="`/category/${child.id}`">{{child.name}}</nuxt-link>
+            </el-menu-item>
+            <template v-if="!item.children">
+              <nuxt-link :to="`/category/${item.id}`">{{item.name}}</nuxt-link>
+            </template>
+          </component>
+        </el-menu>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { CategoryModel, CategoryCollection } from '../resource'
+  import { mapState } from 'vuex'
   export default {
     name: 'dlq-header',
     data() {
       return {
-        categories: [],
         rootCategories: [],
-        categoryCollection: CategoryCollection.getInstance(),
+        menuTrigger: process.env.NODE_ENV === 'development' ? 'click' : 'hover',
       }
     },
-    async mounted() {
-      console.log('mounted -> this.categoryCollection', this.categoryCollection)
-      this.rootCategories = (
-        await this.categoryCollection.fetchRootCategories()
-      )
+    computed: {
+      ...mapState(['categoryCollection']),
+      categories() {
+        if (!this.categoryCollection.list) {
+          return []
+        }
+        const { list, mapList } = this.categoryCollection
+        const map = JSON.parse(JSON.stringify(mapList))
+        try {
+          list.forEach((item) => {
+            if (map[item.parent]) {
+              map[item.parent].children = map[item.parent].children || []
+              map[item.parent].children.push(item)
+              delete map[item.id]
+            }
+          })
+        } catch (er) {
+          console.log(er)
+        }
+        return Object.values(map)
+      },
     },
   }
 </script>
@@ -58,22 +102,5 @@
     width: 960px;
     text-align: left;
     padding: 0 10px;
-    li {
-      display: inline-block;
-      // width: 100px;
-      height: 60px;
-      padding: 0 20px;
-      line-height: 60px;
-      font-size: 16px;
-      &:first-child {
-        padding-left: 0;
-      }
-      a {
-        color: #f1f1f1;
-        &:hover {
-          color: $primary;
-        }
-      }
-    }
   }
 </style>

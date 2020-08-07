@@ -6,9 +6,22 @@
       <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
     </div>
     <div class="introduce">
-      <div class="name">杜连强</div>
+      <div class="name">
+        <span>杜连强</span>
+      </div>
       <div class="autograph">
-        <i class="iconfont icon-sign"></i>简单做人 认真做事 乐观人生
+        <p>
+          合抱之木
+          <i class="iconfont icon-mu"></i>生于毫末
+        </p>
+        <p>
+          九层之台
+          <i class="iconfont icon-tu"></i>起于累土
+        </p>
+        <p>
+          千里之行
+          <i class="iconfont icon-zu"></i>始于足下
+        </p>
       </div>
     </div>
     <div class="achievements">
@@ -101,13 +114,40 @@
     .name {
       font-size: 18px;
       color: #333;
+      position: relative;
+      width: 120px;
+      display: inline-block;
+      &:before,
+      &:after {
+        content: '';
+        display: block;
+        width: 30px;
+        height: 1px;
+        background: #999;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        z-index: 1;
+      }
+      &:after {
+        left:auto;
+        right:0;
+      }
     }
     .autograph {
-      font-size: 12px;
+      margin-top: 5px;
+      font-size: 10px;
       color: #999;
       line-height: 18px;
+      // p:nth-child(2){
+      //   font-size: 14px;
+      // }
+      // p:nth-child(3){
+      //   font-size: 16px;
+      // }
       i {
         font-size: 14px;
+        padding: 0 3px;
       }
     }
   }

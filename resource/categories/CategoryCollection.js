@@ -1,12 +1,17 @@
 import { MediaModel } from '../media';
 import wp from '../../plugins/wpapi';
 import CategoryModel from './CategoryModel';
+import { uniqBy } from 'lodash';
 
 const categoryId = Symbol();
 let categoryCollection = null;
 
 export default class CategoryCollection {
   list = [];
+  param = {
+    per_page: 100,
+    page: 1
+  }
   constructor(id) {
     if (id !== categoryId) {
       throw new Error(`Can not create a CategoryCollection instance.`);
@@ -19,17 +24,25 @@ export default class CategoryCollection {
 
     return categoryCollection;
   }
-  async fetchList () {
-    const categories = await wp.categories().param('per_page', 100)
-    const categoriesList = await Promise.complete(categories.map(async tag => await new CategoryModel(tag)));
-
-    this.list = categoriesList
-    return this.list
-  }
-  async fetchMap () {
-    if (!this.list.length) {
-      await this.fetchList();
+  async more (options) {
+    if (this.list.length === (this._paging && this._paging.total)) {
+      throw new Error('no data')
     }
+    this.list.length !== 0 && ++this.param.page;
+    const moreList = this.fetchList(options);
+    return moreList;
+  }
+  async fetchList (options = {}) {
+    const param = Object.assign(this.param, options);
+    const response = await wp.categories().param(param);
+    this._paging = response._paging;
+    const list = await Promise.complete(response.map(async tag => await new CategoryModel(tag)));
+    this.list = [].concat(this.list, list);
+    this.list = uniqBy(this.list,'id');
+    this.fetchMap();
+    return list
+  }
+  fetchMap (options) {
     this.mapList = this.list.reduce((pre, next) => Object.assign(pre, { [next.id]: next }), {})
     return this.mapList;
   }

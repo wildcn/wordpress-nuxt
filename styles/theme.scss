@@ -1,6 +1,7 @@
 @import "./var.scss";
-@import "./article.scss";
-@import "./animation.scss";
+@import "./theme/article.scss";
+@import "./theme/animation.scss";
+@import "./theme/menu.scss";
 a {
   text-decoration: none;
   &:hover {

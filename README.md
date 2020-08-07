@@ -24,3 +24,6 @@ For detailed explanation on how things work, check out [Nuxt.js docs](https://nu
 # development process
 
 - delete custom post type(novel)
+- add iconfont
+- api cache
+- api pool

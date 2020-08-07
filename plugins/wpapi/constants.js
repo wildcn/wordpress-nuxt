@@ -14,18 +14,13 @@ export const _fields = {
     'excerpt',
     'featured_media',
     'id',
-    'link',
-    'meta',
     'tags',
     'title',
-    'type'
   ],
   [TYPES.MEDIA]: [
-    'author',
     'id',
     'source_url',
     'post',
-    'mime_type',
   ],
   [TYPES.TAGS]: [
     'count',

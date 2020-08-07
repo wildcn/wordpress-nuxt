@@ -1,29 +1,27 @@
 import wp from '../../plugins/wpapi';
-import TagModel from './TagModel';
+import MediaModel from './MediaModel';
 import { uniqBy } from 'lodash';
 const tagId = Symbol();
-let categoryCollection = null;
+let mediaCollection = null;
 
-export default class TagCollection {
-  map = {};
+export default class MediaCollection {
   list = [];
-  requestStatus = false;
   mapList = {}
   param = {
-    per_page: 100,
+    per_page: 20,
     page: 1
   }
   constructor(id) {
     if (id !== tagId) {
-      throw new Error(`Can not create a WbItemCollection instance.`);
+      throw new Error(`Can not create a MediaCollection instance.`);
     }
   }
   static getInstance () {
-    if (categoryCollection === null) {
-      categoryCollection = new TagCollection(tagId);
+    if (mediaCollection === null) {
+      mediaCollection = new MediaCollection(tagId);
     }
 
-    return categoryCollection;
+    return mediaCollection;
   }
   async more (options) {
     if (this.list.length === (this._paging && this._paging.total)) {
@@ -33,13 +31,13 @@ export default class TagCollection {
     const moreList = this.fetchList(options);
     return moreList;
   }
-  async fetchList (options = {}) {
+  async fetchList (options) {
     const param = Object.assign(this.param, options);
-    const response = await wp.tags().param(param);
+    const response = await wp.media().param(param)
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async tag => await new TagModel(tag)));
+    const list = await Promise.complete(response.map(async tag => await new MediaModel(tag)));
     this.list = [].concat(this.list, list);
-    this.list = uniqBy(this.list, 'id');
+    this.list = uniqBy(this.list,'id');
     this.fetchMap();
     return list
   }

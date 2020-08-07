@@ -21,7 +21,7 @@
           <div class="title">推荐阅读</div>
           <div class="list">
             <li v-for="(item,index) in validRecommand" :key="index">
-              <a :href="item.link">
+              <a :href="`/posts/${item.id}`">
                 <img
                   :src="item.featuredMediaModel.source_url"
                   v-show="item.featuredMediaModel && item.featuredMediaModel.source_url"
@@ -99,7 +99,6 @@
           window.pageYOffset ||
           document.documentElement.scrollTop ||
           document.body.scrollTop
-        console.log('changeScroll -> scrollTop', scrollTop)
         // 判断筛选条件是否显示
         this.fixedHeader = scrollTop > 200 ? true : false
       },
