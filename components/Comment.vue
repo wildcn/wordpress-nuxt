@@ -11,7 +11,7 @@
         type="primary"
       ></el-button>
       <el-button title="撤销" circle icon="iconfont icon-cancel" v-show="content"></el-button>
-     
+
       <span class="btn">
         <el-button circle icon="el-icon-share" type="info"></el-button>
       </span>
@@ -21,10 +21,21 @@
 
 <script>
   export default {
+    props: {
+      value: String,
+    },
     data() {
       return {
-        content: '',
+        content: this.value,
       }
+    },
+    watch: {
+      content(val) {
+        this.$emit('input', val)
+      },
+      value(val) {
+        this.content = val
+      },
     },
     methods: {
       sendComment() {

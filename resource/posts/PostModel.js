@@ -44,7 +44,12 @@ export default class PostsModel {
   async init () {
 
     try {
-      await Promise.complete([this.fetchCategories(), this.fetchMedias(), this.fetchTags(), this.fetchComments()],'postModel init ')
+      await Promise.complete([
+        this.fetchCategories(),
+        this.fetchMedias(),
+        this.fetchTags(),
+        this.fetchComments()
+      ], 'postModel init ')
       return this;
     } catch (err) {
       throw new Error(err);
@@ -78,7 +83,7 @@ export default class PostsModel {
           return categoriesCol.mapList[id]
         }
         return await new CategoryModel(id);
-      }),'fetchCategories')
+      }), 'fetchCategories')
     }
     return;
   }
@@ -94,7 +99,7 @@ export default class PostsModel {
           return response
         }
         throw new Error(response);
-      }),'fetchTags')
+      }), 'fetchTags')
 
     }
     return;
@@ -114,12 +119,15 @@ export default class PostsModel {
           return response
         }
         throw new Error(response);
-      }),'fetchMedias');
+      }), 'fetchMedias');
     }
     return;
 
   }
-  async fetchComment () {
+  async fetchComments () {
+    if (commentCol.list.length === 0) {
+      await commentCol.more();
+    }
     if (commentCol.postMapList && commentCol.postMapList[this.id]) {
       this.commentsCollection = commentCol.postMapList[this.id]
     } else {
@@ -131,7 +139,7 @@ export default class PostsModel {
     return;
   }
   async createComment (param) {
-    // param.post = this.id;
+    param.post = this.id;
     wp.comments().create(param).then(data => {
       console.log("PostsModel -> createComment -> data", data)
     })

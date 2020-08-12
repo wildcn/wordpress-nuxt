@@ -12,9 +12,12 @@ export default class CommentModel {
         this.fetchMeta().then(() => {
           resolve(this);
         })
-      } else if (isPlainObject(args) && this.isValidMedia(args)) {
+      } else if (isPlainObject(args) && this.isValidComment(args)) {
         Object.assign(this, args);
         resolve(this)
+      } else if (isPlainObject(args) && args.content) {
+        Object.assign(this, args);
+        resolve(this);
       } else {
         reject('CommentModel args is invalid')
         // throw new Error('CommentModel args is invalid');
@@ -23,11 +26,22 @@ export default class CommentModel {
   }
   async fetchMeta () {
     const response = await wp.comments().id(this.id);
-    if (this.isValidMedia(response)) {
+    if (this.isValidComment(response)) {
       Object.assign(this, response);
     }
   }
-  isValidMedia (data) {
+  static async createComment (param = {}) {
+    if (!param.post) {
+      throw new Error('need post');
+    }
+    if (!param.content) {
+      throw new Error('need content');
+    }
+
+    const response = await wp.comments().create(param)
+    return response;
+  }
+  isValidComment (data) {
     return data.id && data.content && data.author_name;
   }
 }

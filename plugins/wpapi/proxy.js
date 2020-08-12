@@ -46,10 +46,14 @@ const proxy = (ctx, type, getId) => {
   if (_fields[type]) {
     const response = function () {
       var arg = arguments[0];
-      if (isPlainObject(arg) && arg._fields) {
-        return ctx.apply(this, Array.from(arguments)).param('_fields', arg._fields)
+      const fn = ctx.apply(this, Array.from(arguments));
+      if (type === 'comments') {
+        fn.param('skip_cache',1);
       }
-      return ctx.apply(this, Array.from(arguments)).param('_fields', _fields[type].join(','));
+      if (isPlainObject(arg) && arg._fields) {
+        return fn.param('_fields', arg._fields)
+      }
+      return fn.param('_fields', _fields[type].join(','))
     }
     return response
   }
