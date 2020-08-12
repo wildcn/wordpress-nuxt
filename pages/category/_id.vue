@@ -1,7 +1,10 @@
 <template>
   <div class="page-category">
     <div class="column" v-for="(val,key,index) in postsByCategories" :key="index">
-      <div v-if="categoriesMap[key] && categoriesMap[key].name" class="title">{{categoriesMap[key].name}}</div>
+      <div
+        v-if="categoriesMap[key] && categoriesMap[key].name"
+        class="title"
+      >{{categoriesMap[key].name}}</div>
       <ul>
         <li v-for="(item,idx) in val" :key="idx">
           <a :href="`/posts/${item.id}`">{{item.title.rendered}}</a>
@@ -26,15 +29,21 @@
   const categoryCollection = CategoryCollection.getInstance()
   const postCollection = PostCollection.getInstance()
   export default {
-    name:'category',
+    name: 'category',
     async asyncData(ctx) {
       try {
         const id = +ctx.params.id
-        const categories = await categoryCollection.fetchCategoriesByRootId(id)
+        var categories
+        try {
+          categories = await categoryCollection.fetchCategoriesByRootId(id)
+        } catch (err) {
+          console.log('Data -> err', err)
+          categories = []
+        }
 
         const ids = categories.map((item) => item.id)
         const posts = await postCollection.fetchList({ categories: ids })
-        
+
         return {
           posts,
           categories,
@@ -48,6 +57,10 @@
         posts: [],
         categories: [],
       }
+    },
+    mounted () {
+      // categoryCollection.list = this.categories.list;
+      // categoryCollection.fetchMap();
     },
     computed: {
       categoriesMap() {
@@ -75,10 +88,10 @@
     margin: 20px auto;
     width: 960px;
     min-height: 600px;
-    
+
     .column {
       width: 460px;
-      float:left;
+      float: left;
       background-color: #fff;
       border-radius: 5px;
       text-align: left;

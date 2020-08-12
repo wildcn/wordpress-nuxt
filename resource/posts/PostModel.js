@@ -34,6 +34,7 @@ export default class PostsModel {
         Object.assign(this, args);
         this.init().then(() => {
           resolve(this);
+        }).catch(err => {
         })
       } else {
         reject('postsModel args is invalid')
@@ -41,13 +42,12 @@ export default class PostsModel {
     })
   }
   async init () {
+
     try {
-      await this.fetchCategories();
-      await this.fetchMedias();
-      await this.fetchTags();
-      // await this.fetchComments();
+      await Promise.complete([this.fetchCategories(), this.fetchMedias(), this.fetchTags(), this.fetchComments()],'postModel init ')
       return this;
     } catch (err) {
+      throw new Error(err);
     }
   }
   async fetchContent () {
@@ -78,12 +78,13 @@ export default class PostsModel {
           return categoriesCol.mapList[id]
         }
         return await new CategoryModel(id);
-      }))
+      }),'fetchCategories')
     }
+    return;
   }
   async fetchTags () {
     const tags = this.tags || [];
-    try {
+    if (tags.length) {
       this.tagsCollection = await Promise.complete(tags.map(async id => {
         if (tagCol.mapList[id]) {
           return tagCol.mapList[id];
@@ -93,9 +94,10 @@ export default class PostsModel {
           return response
         }
         throw new Error(response);
-      }))
-    } catch (err) {
+      }),'fetchTags')
+
     }
+    return;
   }
   async fetchMedias () {
     let media = this.media || [];
@@ -112,16 +114,27 @@ export default class PostsModel {
           return response
         }
         throw new Error(response);
-      }));
+      }),'fetchMedias');
     }
+    return;
 
   }
-  async fetchComments () {
+  async fetchComment () {
     if (commentCol.postMapList && commentCol.postMapList[this.id]) {
       this.commentsCollection = commentCol.postMapList[this.id]
     } else {
-      const commentIds = await wps.comments.post(this.id);
+      // try {
+      //   const commentIds = await wps.comments.post(this.id);
+      // } catch (err) {
+      // }
     }
+    return;
+  }
+  async createComment (param) {
+    // param.post = this.id;
+    wp.comments().create(param).then(data => {
+      console.log("PostsModel -> createComment -> data", data)
+    })
   }
   isValidPost (data) {
     return data.id && data.title.rendered;

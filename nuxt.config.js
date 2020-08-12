@@ -21,7 +21,8 @@ export default {
     description: '杜连强 前端工程师 网文爱好者',
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      {
+        name: 'viewport', content: 'width=device-width, initial-scale=1,user-scalable=no,maximum-scale=1.0, minimum- scale=1.0' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
@@ -40,7 +41,7 @@ export default {
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/lodash.js/4.17.15/lodash.min.js',
     }, {
-      src: 'https://hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4'
+      src: process.client ? 'https://hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4' : ''
     }]
   },
   /*
@@ -57,7 +58,8 @@ export default {
     '~/plugins/wpapi/index.js',
     '~/plugins/github',
     '~/plugins/extend',
-    '~/plugins/highlight'
+    '~/plugins/highlight',
+    '~/plugins/router'
   ],
   /*
   ** Auto import components

@@ -1,6 +1,6 @@
 import wp from '../../plugins/wpapi';
 import PostModel from './PostModel';
-import { isEmpty, isPlainObject,uniqBy } from 'lodash';
+import { isEmpty, isPlainObject, uniqBy } from 'lodash';
 import { CategoryModel, CategoryCollection } from '../categories';
 import { TagModel, TagCollection } from '../tags';
 import { MediaModel, MediaCollection } from '../media';
@@ -17,7 +17,7 @@ const mediaCollection = MediaCollection.getInstance();
 
 export default class PostCollection {
   param = {
-    per_page: 15,
+    per_page: 10,
     page: 1
   }
   list = []
@@ -45,27 +45,30 @@ export default class PostCollection {
   async prepareMaterial () {
     await Promise.complete(
       [// 获取标签
-        await tagCollection.more(),
+        tagCollection.more(),
         // 获取评论
-        await commentCollection.more(),
+        commentCollection.more(),
         // 获取栏目
-        await categoryCollection.more(),
+        categoryCollection.more(),
         // 获取媒体
-        await mediaCollection.more()
-      ]
+        mediaCollection.more()
+      ],'postCollection/prepareMaterial'
     )
   }
   async fetchList (options = {}) {
     try {
       await this.prepareMaterial();
     } catch (err) {
+    console.log("PostCollection -> fetchList -> err", err)
     }
-    let param = Object.assign(this.param, options);
+    let param = Object.assign({}, this.param, options);
+  
+
     const response = await wp.posts().param(param);
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async (item) => await new PostModel(item)))
+    const list = await Promise.complete(response.map(async (item) => await new PostModel(item)),'postCollectin/fetchList')
     this.list = [].concat(this.list, list);
-    this.list = uniqBy(this.list,'id');
+    this.list = uniqBy(this.list, 'id');
     this.fetchMap();
     return list
   }

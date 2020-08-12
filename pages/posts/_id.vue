@@ -3,6 +3,11 @@
     <page-tool class="left-tool" :date="postModel.date"></page-tool>
     <transition name="fade">
       <div class="header-fixed" v-if="fixedHeader">
+        <div class="logo">
+          <a href="/">
+            <Logo></Logo>
+          </a>
+        </div>
         <div class="content">
           <h1>{{postModel.title.rendered}}</h1>
         </div>
@@ -35,28 +40,39 @@
         </div>
       </div>
     </div>
+    <Comment @update="updateComment" :PostModel="postModel"></Comment>
   </div>
 </template>
 
 <script>
-  import { PostModel } from '../../resource'
-  import PageTool from '../../components/PageTool';
+  import { PostModel, CategoryCollection } from '../../resource'
+  import PageTool from '../../components/PageTool'
   import wp from '../../plugins/wpapi'
+  import Logo from '../../components/Logo'
+  import Comment from '../../components/Comment'
+
+  const categoryCollection = CategoryCollection.getInstance()
+
   export default {
     components: {
       PageTool,
+      Logo,
+      Comment,
     },
     async asyncData(ctx) {
       const id = +ctx.params.id
       const postModel = await new PostModel(id)
       const content = await postModel.fetchContent()
+
+      await categoryCollection.fetchList()
       // 获取推荐列表
       const sticky = await wp.posts().sticky(true).perPage(5)
       const recommand = await Promise.complete(
-        sticky.map(async (item) => await new PostModel(item))
+        sticky.map(async (item) => await new PostModel(item)),'posts/id asyncData'
       )
 
       return {
+        categoryCollection,
         postModel,
         recommand,
         id,
@@ -72,6 +88,9 @@
     },
     mounted() {
       window.addEventListener('scroll', this.changeScroll)
+      categoryCollection.list = this.categoryCollection.list
+      categoryCollection._paging = this.categoryCollection._paging
+      categoryCollection.fetchMap()
     },
     computed: {
       time() {
@@ -102,6 +121,9 @@
         // 判断筛选条件是否显示
         this.fixedHeader = scrollTop > 200 ? true : false
       },
+      updateComment(param){
+        this.postModel.createComment(param);
+      }
     },
   }
 </script>
@@ -113,7 +135,7 @@
     display: block;
     overflow: hidden;
   }
-  
+
   .left-tool {
     position: fixed;
     left: 50%;
@@ -146,6 +168,24 @@
     }
     * {
       color: #fff;
+    }
+  }
+  .logo {
+    display: inline-block;
+    height: 50px;
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    a {
+      display: block;
+      height: 100%;
+    }
+    img {
+      height: 100%;
+      width: auto;
+      &:hover {
+        fill: $primary;
+      }
     }
   }
 </style>

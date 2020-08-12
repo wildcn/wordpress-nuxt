@@ -28,14 +28,14 @@ export default class MediaCollection {
       throw new Error('no data')
     }
     this.list.length !== 0 && ++this.param.page;
-    const moreList = this.fetchList(options);
+    const moreList = await this.fetchList(options);
     return moreList;
   }
   async fetchList (options) {
     const param = Object.assign(this.param, options);
     const response = await wp.media().param(param)
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async tag => await new MediaModel(tag)));
+    const list = await Promise.complete(response.map(async tag => await new MediaModel(tag)),'mediaCollection/fetchList');
     this.list = [].concat(this.list, list);
     this.list = uniqBy(this.list,'id');
     this.fetchMap();

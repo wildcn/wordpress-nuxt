@@ -70,3 +70,31 @@
     transform: rotate(0deg);
   }
 }
+
+// 列表动画
+$grid-columns: 15;
+
+ul {
+  @for $i from 1 through $grid-columns {
+    $time: ($i * 100+20) + ms;
+    .animation-#{$i} {
+      transition: all 0.5s linear;
+      animation-name: toTop; // toBottom
+      animation-duration: 0.5s; // 注释掉 会没有动画 就是帕帕一帧一帧的出来
+      animation-fill-mode: both;
+      animation-delay: $time;
+    }
+  }
+}
+// 方向 下-->上
+@keyframes toTop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}

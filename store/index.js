@@ -3,15 +3,13 @@ import Vuex from 'vuex'
 import Vue from 'vue';
 import { CategoryCollection } from '../resource';
 import { isEmpty } from 'lodash';
-Vue.use(Vuex)
 
 const categoryCollection = CategoryCollection.getInstance();
 
-const store = () => new Vuex.Store({
-  state: {
+export default {
+  state: () => ({
     categoryCollection: {}
-
-  },
+  }),
   mutations: {
     updateCategoryCollection (state, payload) {
       state.categoryCollection = payload;
@@ -28,6 +26,4 @@ const store = () => new Vuex.Store({
   },
   getters: {
   }
-})
-
-export default store;
+}

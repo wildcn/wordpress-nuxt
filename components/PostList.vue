@@ -1,11 +1,16 @@
 <template>
   <div class="post-list">
     <ul>
-      <li v-for="(item,index) in posts" :key="index">
+      <li
+        v-for="(item,index) in postCollection.list"
+        :key="index"
+        :class="`animation-${getAnimationIndex(index)}`"
+      >
         <div
           class="wrap-media"
           v-show="item.featuredMediaModel.id"
-          :style="{'background-image':'url('+item.featuredMediaModel.source_url+')'}"
+          :class="{'unload':!item.featuredMediaModel.id}"
+          :style="{'background-image':'url('+item.featuredMediaModel.source_url || svg+')'}"
         ></div>
         <div class="content">
           <a :href="`/posts/${item.id}`" class="title" v-html="item.title.rendered"></a>
@@ -39,7 +44,7 @@
       size="medium"
       plain
       :disabled="noData"
-      v-show="posts.length"
+      v-show="postCollection.list.length"
       class="more"
       @click="more"
     >{{noData?'暂无更多数据':'加载更多'}}</el-button>
@@ -48,6 +53,7 @@
 
 <script>
   import { PostCollection } from '~/resource'
+  import svg from '~/assets/images/logo-0.3.png'
 
   export default {
     props: {
@@ -57,6 +63,8 @@
       return {
         postCollection: PostCollection.getInstance(),
         noData: false,
+        scrollTop: 0,
+        svg,
       }
     },
     computed: {
@@ -66,14 +74,25 @@
     },
     methods: {
       more() {
+        this.scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop
         this.postCollection
           .more()
           .then(() => {
             this.$emit('input', this.postCollection.list)
+            window.scrollTo(0, this.scrollTop)
           })
           .catch((err) => {
             this.noData = true
           })
+      },
+      getAnimationIndex(index) {
+        ++index
+        if (index % 10 === 0) {
+          return 10
+        } else {
+          return index % 10
+        }
       },
     },
   }
@@ -113,6 +132,16 @@
       vertical-align: middle;
       background-size: cover;
       background-position: center center;
+      &.unload {
+        background-size: 50% 50%;
+        background-position: center center;
+        background-repeat: no-repeat;
+        svg {
+          path {
+            fill: #ebebeb;
+          }
+        }
+      }
       img {
         width: 100%;
         height: auto;
@@ -165,5 +194,12 @@
     width: 100%;
     display: block;
     cursor: pointer;
+  }
+  .container {
+    display: block;
+    position: relative;
+    li {
+      transition: all 0.5s;
+    }
   }
 </style>
