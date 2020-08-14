@@ -12,21 +12,21 @@
       <div class="autograph">
         <p>
           合抱之木
-          <i class="iconfont icon-mu"></i>生于毫末
+          <i class="icon-mu"></i>生于毫末
         </p>
         <p>
           九层之台
-          <i class="iconfont icon-tu"></i>起于累土
+          <i class="icon-tu"></i>起于累土
         </p>
         <p>
           千里之行
-          <i class="iconfont icon-zu"></i>始于足下
+          <i class="icon-target"></i>始于足下
         </p>
       </div>
     </div>
     <div class="achievements">
       <div class="github">
-        <i class="iconfont icon-github"></i>
+        <i class="icon-github"></i>
         <a href="https://github.com/wildcn" target="_blank">https://github.com/wildcn</a>
       </div>
       <div class="repos" v-show="repos.length">
@@ -35,15 +35,15 @@
           <div class="description" v-show="item.description">{{item.description}}</div>
           <div class="info">
             <span class="language" v-show="item.language">
-              <i class="iconfont icon-language"></i>
+              <i class="icon-language"></i>
               {{item.language}}
             </span>
             <span class="forks" v-show="item.forks">
-              <i class="iconfont icon-fork"></i>
+              <i class="icon-fork"></i>
               {{item.forks}}
             </span>
             <span class="star" v-show="item.stargazers_count">
-              <i class="iconfont icon-star"></i>
+              <i class="icon-star"></i>
               {{item.stargazers_count}}
             </span>
           </div>

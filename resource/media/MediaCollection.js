@@ -33,7 +33,7 @@ export default class MediaCollection {
   }
   async fetchList (options) {
     const param = Object.assign(this.param, options);
-    const response = await wp.media().param(param)
+    const response = await wp.media(param).param(param)
     this._paging = response._paging;
     const list = await Promise.complete(response.map(async tag => await new MediaModel(tag)),'mediaCollection/fetchList');
     this.list = [].concat(this.list, list);

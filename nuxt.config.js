@@ -22,8 +22,9 @@ export default {
     meta: [
       { charset: 'utf-8' },
       {
-        name: 'viewport', content: 'width=device-width, initial-scale=1,user-scalable=no,maximum-scale=1.0, minimum- scale=1.0' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+        name: 'viewport', content: 'width=device-width, initial-scale=1,user-scalable=no,maximum-scale=1.0'
+      },
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '杜连强 前端工程师 网文爱好者' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -35,13 +36,18 @@ export default {
     }, {
       src: 'http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
     }, {
-      src: 'https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js'
+      src: 'https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js',
+      ssr: true
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.js',
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/lodash.js/4.17.15/lodash.min.js',
     }, {
-      src: process.client ? 'https://hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4' : ''
+      src: process.env.NODE_ENV !== 'development' ? 'https://hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4' : ''
+    }, {
+      src: '//cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js'
+    }, {
+      src: '//cdn.bootcdn.net/ajax/libs/vue-meta/2.4.0/vue-meta.min.js'
     }]
   },
   /*
@@ -59,7 +65,8 @@ export default {
     '~/plugins/github',
     '~/plugins/extend',
     '~/plugins/highlight',
-    '~/plugins/router'
+    '~/plugins/router',
+    '~/plugins/moment',
   ],
   /*
   ** Auto import components
@@ -113,7 +120,9 @@ export default {
           'vue': 'Vue',
           'element-ui': 'ELEMENT',
           'lodash': '_',
-          'vue-router': 'VueRouter'
+          'vue-router': 'VueRouter',
+          'vuex': 'Vuex',
+          'vue-meta': 'VueMeta'
         })
       }
     },

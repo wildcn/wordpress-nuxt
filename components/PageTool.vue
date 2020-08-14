@@ -9,16 +9,16 @@
     </div>
     <div class="page-btn" @click="rewardDialog = !rewardDialog" :class="{active:rewardDialog}">
       <div class="page-btn-icon">
-        <i class="iconfont icon-qrcode"></i>
+        <i class="icon-qrcode"></i>
       </div>
       <p>打赏</p>
     </div>
     <div class="page-btn page-qrcode">
       <div class="page-btn-icon">
-        <i class="iconfont icon-phone"></i>
+        <i class="icon-phone"></i>
       </div>
       <p>手机访问</p>
-      <div id="qrcode-area" ref="qrcode"></div>
+      <Qrcode class="qrcode"></Qrcode>
     </div>
     <el-dialog append-to-body title="感谢您的打赏" :visible.sync="rewardDialog">
       <div class="reward-dialog">
@@ -36,24 +36,17 @@
 </template>
 
 <script>
+  import Qrcode from './Qrcode'
   export default {
     props: {
       date: String | Object,
     },
+    components: {
+      Qrcode,
+    },
     computed: {
       time() {
-        const time = new Date(this.date)
-        var year = time.getFullYear()
-        var month = time.getMonth() - 1
-        var day = time.getDay()
-        var hour = time.getHours()
-        var minute = time.getMinutes()
-        var second = time.getSeconds()
-        return {
-          year,
-          md: `${month}/${day}`,
-          time: `${hour}:${minute}`,
-        }
+        return this.$moment(this.date)
       },
     },
     data() {
@@ -61,25 +54,6 @@
         rewardDialog: false,
         mobileDialog: false,
       }
-    },
-    mounted() {
-      this.generateQrcode(location.href)
-    },
-    methods: {
-      generateQrcode(href) {
-        if (process.client) {
-          const QRCode = require('qrcodejs2')
-          new QRCode(this.$refs.qrcode, {
-            text: href,
-            width: 150, //图像宽度
-            height: 150, //图像高度
-            colorDark: '#409eff', //前景色
-            colorLight: '#f9f9f9', //背景色
-            typeNumber: 4,
-            correctLevel: QRCode.CorrectLevel.H, //容错级别 容错级别有：（1）QRCode.CorrectLevel.L （2）QRCode.CorrectLevel.M （3）QRCode.CorrectLevel.Q （4）QRCode.CorrectLevel.H
-          })
-        }
-      },
     },
   }
 </script>
@@ -127,6 +101,17 @@
       p {
         margin-top: 5px;
       }
+      .qrcode {
+        position: absolute;
+        right: 0;
+        background-color: #f9f9f9;
+        top: 50%;
+        transform: translate(110%,-50%);
+        display: none;
+        width: 180px;
+        transition: 0.5s all;
+        height: 180px;
+      }
       .page-btn-icon {
         transition: 0.5s all;
         margin: 0 auto;
@@ -142,6 +127,9 @@
           font-size: 30px;
         }
       }
+      &:hover .qrcode{
+        display: block;
+      }
       &:hover .page-btn-icon,
       &.active .page-btn-icon {
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -149,23 +137,6 @@
         animation: zy 2.5s 0.15s linear infinite;
         -moz-animation: zy 2.5s 0.15s linear infinite;
         -o-animation: zy 2.5s 0.15s linear infinite;
-      }
-      #qrcode-area {
-        display: none;
-        width: 180px;
-        height: 180px;
-        padding: 15px;
-        box-sizing: border-box;
-        position: absolute;
-        right: -180px;
-        background-color: #f9f9f9;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-      &.page-qrcode:hover {
-        #qrcode-area {
-          display: grid;
-        }
       }
     }
   }

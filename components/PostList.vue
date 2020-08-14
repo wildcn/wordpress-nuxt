@@ -4,7 +4,7 @@
       <li
         v-for="(item,index) in postCollection.list"
         :key="index"
-        :class="`animation-${getAnimationIndex(index)}`"
+        :class="`animation-other-${getAnimationIndex(index)}`"
       >
         <div
           class="wrap-media"
@@ -17,23 +17,23 @@
           <div class="abstract" v-html="item.excerpt.rendered"></div>
           <div class="media">
             <span class="tags category" v-show="item.categoriesCollection.length">
-              <i class="iconfont icon-category"></i>
+              <i class="icon-category"></i>
               <a
-                :href="item.link"
-                v-for="(item,idx) in item.categoriesCollection"
+                :href="`/category/${category.id}`"
+                v-for="(category,idx) in item.categoriesCollection"
                 :key="idx"
-              >{{item.name}}</a>
+              >{{category.name}}</a>
             </span>
             <span class="tags" v-show="item.tagsCollection.length">
-              <i class="iconfont icon-tag"></i>
+              <i class="icon-tag"></i>
               <a
-                :href="item.link"
-                v-for="(item,idx) in item.tagsCollection"
+                :href="tag.link"
+                v-for="(tag,idx) in item.tagsCollection"
                 :key="idx"
-              >{{item.name}}</a>
+              >{{tag.name}}</a>
             </span>
             <span class="comment" v-show="item.commentsCollection.length">
-              <i class="iconfont icon-comment"></i>
+              <i class="icon-comment"></i>
               {{item.commentsCollection.length}}
             </span>
           </div>

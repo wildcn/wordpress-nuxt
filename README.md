@@ -1,6 +1,6 @@
 # dulianqiang
 
-## Build Setup
+## 杜连强 前端工程师 网文爱好者
 
 ```bash
 # install dependencies

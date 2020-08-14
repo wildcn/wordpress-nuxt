@@ -1,13 +1,12 @@
 <template>
   <div class="container page-component__scroll">
-    <el-backtop class="top" :bottom="20">
+    <el-backtop class="top" :bottom='10'>
       <i class="icon-top"></i>
     </el-backtop>
     <dlq-header></dlq-header>
     <div class="content">
-      <Nuxt></Nuxt>
+      <Nuxt />
     </div>
-    <dlq-footer></dlq-footer>
   </div>
 </template>
 <script>
@@ -35,6 +34,7 @@
     display: block;
     background-color: #f9f9f9;
     overflow: hidden;
+    margin-bottom: 50px;
   }
   .main {
     margin: 960px;

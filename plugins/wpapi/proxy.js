@@ -17,7 +17,6 @@ export const proxyId = (wp, type, method) => {
         timer = setTimeout(() => {
           clearTimeout(timer);
           var ids = Object.keys(poolCacheFn[type]);
-          console.log("timer -> ids", ids)
           wp[type]()[method](ids).then(datas => {
           
             const map = datas.reduce((pre, next) => {

@@ -126,7 +126,7 @@ export default class PostsModel {
   }
   async fetchComments () {
     if (commentCol.list.length === 0) {
-      await commentCol.more();
+      await commentCol.more({per_page:100});
     }
     if (commentCol.postMapList && commentCol.postMapList[this.id]) {
       this.commentsCollection = commentCol.postMapList[this.id]

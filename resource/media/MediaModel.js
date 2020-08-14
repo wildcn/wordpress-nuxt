@@ -4,7 +4,6 @@ import wp from '../../plugins/wpapi';
 export default class MediaModel {
   id = null;
   source_url = null;
-  mime_type = null;
   media_details = {};
 
   constructor(args) {

@@ -45,6 +45,8 @@ export const _fields = {
     'date',
     'link',
     'content',
+    'parent',
+    'author_avatar_urls',
     'post'
   ]
 }

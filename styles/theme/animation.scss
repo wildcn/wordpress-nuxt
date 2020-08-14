@@ -76,7 +76,7 @@ $grid-columns: 15;
 
 ul {
   @for $i from 1 through $grid-columns {
-    $time: ($i * 100+20) + ms;
+    $time: ($i * 100) + ms;
     .animation-#{$i} {
       transition: all 0.5s linear;
       animation-name: toTop; // toBottom

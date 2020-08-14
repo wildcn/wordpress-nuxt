@@ -64,7 +64,7 @@ export default class PostCollection {
     let param = Object.assign({}, this.param, options);
   
 
-    const response = await wp.posts().param(param);
+    const response = await wp.posts().param(param).order('desc').orderby('date');
     this._paging = response._paging;
     const list = await Promise.complete(response.map(async (item) => await new PostModel(item)),'postCollectin/fetchList')
     this.list = [].concat(this.list, list);

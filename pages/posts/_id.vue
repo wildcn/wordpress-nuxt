@@ -17,7 +17,6 @@
       <div class="main">
         <h1>{{postModel.title.rendered}}</h1>
         <div class="info">
-          <!-- <time :datetime="time" class="date">{{time}}</time> -->
         </div>
         <div class="txt" v-highlight v-html="postModel.content.rendered"></div>
       </div>
@@ -27,58 +26,73 @@
           <div class="list">
             <li v-for="(item,index) in validRecommand" :key="index">
               <a :href="`/posts/${item.id}`">
-                <img
-                  :src="item.featuredMediaModel.source_url"
-                  v-show="item.featuredMediaModel && item.featuredMediaModel.source_url"
-                />
                 <p>{{item.title.rendered}}</p>
-                <p class="excerpt" v-html="item.excerpt.rendered"></p>
               </a>
+              <p class="des">
+                <el-tag
+                  type="info"
+                  size="mini"
+                  class="category"
+                  v-for="category in item.categoriesCollection"
+                  :key="category.id"
+                >{{category.name}}</el-tag>
+                <span class="excerpt" v-html="item.excerpt.rendered"></span>
+              </p>
+
               <div class="info"></div>
             </li>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="common">
-      <div class="comment-list">
-        <div class="menu">
-          <div class="h1">
-            <span class="title">全部评论</span>
-            <span class="total">{{postModel.commentsCollection.length}}</span>
-          </div>
-        </div>
-        <div class="list">
-          <ul>
-            <li v-for="(item,index) in postModel.commentsCollection" :key="index">
-              <div class="meta">
-                <div class="name">{{item.author_name}}</div>
-                <div class="time">{{item.date}}</div>
-              </div>
-              <div class="content" v-html="item.content.rendered"></div>
-            </li>
-          </ul>
+        <div class="item" v-if="mediaCollection.list && mediaCollection.list.length">
+          <MediaWall :collection="mediaCollection"></MediaWall>
         </div>
       </div>
     </div>
-    <Comment v-model="commentContent" @update="updateComment" :PostModel="postModel"></Comment>
+    <CommentList
+      name="comment"
+      @reply="reply"
+      class="common"
+      v-show="commentList.length"
+      :commentList="commentList"
+      :postModel="postModel"
+    ></CommentList>
+
+    <CommentFixed
+      :commentList="commentList"
+      :reply="replyItem"
+      @cancel="replyItem = {}"
+      v-model="commentContent"
+      @update="updateComment"
+      :postModel="postModel"
+    ></CommentFixed>
   </div>
 </template>
 
 <script>
-  import { PostModel, CategoryCollection, CommentModel } from '../../resource'
+  import {
+    PostModel,
+    CategoryCollection,
+    CommentModel,
+    MediaCollection,
+  } from '../../resource'
   import PageTool from '../../components/PageTool'
   import wp from '../../plugins/wpapi'
   import Logo from '../../components/Logo'
-  import Comment from '../../components/Comment'
+  import CommentFixed from '../../components/CommentFixed'
+  import CommentList from '../../components/CommentList'
+  import MediaWall from '../../components/MediaWall'
 
   const categoryCollection = CategoryCollection.getInstance()
+  const mediaCollection = MediaCollection.getInstance()
 
   export default {
+    layout:'post',
     components: {
       PageTool,
       Logo,
-      Comment,
+      CommentFixed,
+      CommentList,
+      MediaWall,
     },
     async asyncData(ctx) {
       const id = +ctx.params.id
@@ -87,17 +101,44 @@
 
       await categoryCollection.fetchList()
       // 获取推荐列表
-      const sticky = await wp.posts().sticky(true).perPage(5)
+      const sticky = await wp
+        .posts()
+        .sticky(true)
+        .perPage(5)
+        .order('desc')
+        .orderby('date')
       const recommand = await Promise.complete(
         sticky.map(async (item) => await new PostModel(item)),
         'posts/id asyncData'
       )
+      // 获取照片墙
+      await mediaCollection.fetchList({
+        _fields: 'id,post,source_url',
+        per_page: 9,
+      })
 
       return {
         categoryCollection,
         postModel,
         recommand,
+        mediaCollection,
         id,
+      }
+    },
+    head() {
+      console.log('head -> this.postModel', this.postModel)
+      const des = this.postModel.excerpt.rendered.replace(/<\/?.+?>/g, '')
+      const description = `${this.postModel.title.rendered} ${des} ——合生——杜连强的博客`
+      return {
+        title: this.postModel.title.rendered + '——合生——杜连强的博客',
+        description: description,
+        meta: [
+          {
+            hid: 'description',
+            name: 'description',
+            content: description,
+          },
+        ],
       }
     },
     data() {
@@ -107,6 +148,7 @@
         fixedHeader: false,
         rewardDialog: false,
         commentContent: '',
+        replyItem: {},
       }
     },
     mounted() {
@@ -114,24 +156,36 @@
       categoryCollection.list = this.categoryCollection.list
       categoryCollection._paging = this.categoryCollection._paging
       categoryCollection.fetchMap()
+
+      mediaCollection.list = this.mediaCollection.list
+      mediaCollection._paging = this.mediaCollection._paging
+      mediaCollection.fetchMap()
     },
     computed: {
-      time() {
-        const time = new Date(this.postModel.date)
-        var year = time.getFullYear()
-        var month = time.getMonth() - 1
-        var day = time.getDay()
-        var hour = time.getHours()
-        var minute = time.getMinutes()
-        var second = time.getSeconds()
-        return {
-          year,
-          md: `${month}/${day}`,
-          time: `${hour}:${minute}`,
-        }
-      },
       validRecommand() {
         return this.recommand.filter((item) => item.id !== this.id)
+      },
+      commentList() {
+        console.log("commentList -> this.postModel.commentsCollection", this.postModel.commentsCollection)
+        if (this.postModel.commentsCollection.length === 0) {
+          return []
+        }
+        const list = this.postModel.commentsCollection.map((item) => {
+          delete item.children
+          return item
+        })
+        const listIds = list.reduce(
+          (pre, next) => Object.assign(pre, { [next.id]: next }),
+          {}
+        )
+        list.forEach((item) => {
+          if (listIds[item.parent]) {
+            listIds[item.parent].children = listIds[item.parent].children || []
+            listIds[item.parent].children.push(item)
+            delete listIds[item.id]
+          }
+        })
+        return Object.values(listIds)
       },
     },
     methods: {
@@ -146,17 +200,26 @@
       },
       updateComment(param) {
         param.post = this.postModel.id
+        if (this.replyItem.id) {
+          param.parent = this.replyItem.id
+        }
         CommentModel.createComment(param)
           .then((data) => {
             this.$message.success('评论成功！')
+            this.postModel.commentsCollection.push(data)
+            this.replyItem = {}
             this.commentContent = ''
           })
           .catch((err) => {
             if (err.message) {
               this.$message.error(err.message)
+              this.replyItem = {}
               this.commentContent = ''
             }
           })
+      },
+      reply(item) {
+        this.replyItem = item
       },
     },
   }
@@ -222,57 +285,8 @@
       }
     }
   }
-  .common{
+  .common {
     width: 960px;
     margin: 0 auto;
-  }
-  .comment-list {
-    width: 650px;
-    background-color: #fff;
-    text-align: left;
-    padding: 20px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    margin-bottom: 30px;
-    .menu {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-left: 12px;
-      border-left: 4px solid #ec7259;
-      font-size: 18px;
-      font-weight: 500;
-      height: 20px;
-      line-height: 20px;
-      .title {
-        font-size: 18px;
-        margin-right: 10px;
-      }
-    }
-    ul li {
-      border-bottom: 1px solid #f9f9f9;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      &:last-child{
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border:none;
-      }
-      .name {
-        font-size: 15px;
-        font-weight: 500;
-      }
-      .time {
-        font-size: 12px;
-        color: #969696;
-      }
-      .content {
-        margin-top: 10px;
-        font-size: 16px;
-        line-height: 1.5;
-        word-break: break-word;
-      }
-    }
   }
 </style>

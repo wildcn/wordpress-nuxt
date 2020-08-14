@@ -20,7 +20,7 @@
     mounted() {
       this.initCollection();
     },
-    async mounted(ctx) {
+    async asyncData(ctx) {
       try {
         const param = {
           per_page: 10,
@@ -30,10 +30,10 @@
         const posts = await postCollection.fetchList()
         console.log("mounted -> posts", posts)
         // 获取标签
-        this.posts = posts;
-        this.postCollection = postCollection;
-        this.categoryCollection = categoryCollection;
-        this.initCollection();
+        // this.posts = posts;
+        // this.postCollection = postCollection;
+        // this.categoryCollection = categoryCollection;
+        // this.initCollection();
         return {
           posts,
           categoryCollection,
@@ -90,6 +90,7 @@
       width: 650px;
       flex: 1;
       margin-top: 20px;
+      // background-color: #fff;
     }
     .secondary {
       width: 300px;

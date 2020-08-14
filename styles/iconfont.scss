@@ -1,0 +1,48 @@
+@font-face {
+  font-family: 'iconfont';  /* project id 1979540 */
+  src: url('//at.alicdn.com/t/font_1979540_ccfmnzmn6eh.eot');
+  src: url('//at.alicdn.com/t/font_1979540_ccfmnzmn6eh.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_1979540_ccfmnzmn6eh.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_1979540_ccfmnzmn6eh.woff') format('woff'),
+  url('//at.alicdn.com/t/font_1979540_ccfmnzmn6eh.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_1979540_ccfmnzmn6eh.svg#iconfont') format('svg');
+}
+
+$font: (
+  comment: "\e635",
+  tag: "\e62b",
+  category: "\e610",
+  github: "\e677",
+  sign: "\e63f",
+  fork: "\e6d0",
+  language: "\e757",
+  start: "\e605",
+  top: "\e61f",
+  qrcode: "\e648",
+  phone: "\e701",
+  mu: "\e603",
+  tu: "\e852",
+  zu: "\e64a",
+  logo: "\e60b",
+  send: "\e636",
+  cancel: "\e657",
+  reply: "\e61a",
+  wechat: "\e61d",
+  required: "\e637",
+  target: "\e659",
+);
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+@each $key, $val in $font {
+  .icon-#{$key} {
+    @extend .iconfont;
+    &:before {
+      content: $val;
+    }
+  }
+}
