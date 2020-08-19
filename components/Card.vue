@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card item">
     <div class="avatar">
       <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
       <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
@@ -24,53 +24,11 @@
         </p>
       </div>
     </div>
-    <div class="achievements">
-      <div class="github">
-        <i class="icon-github"></i>
-        <a href="https://github.com/wildcn" target="_blank">https://github.com/wildcn</a>
-      </div>
-      <div class="repos" v-show="repos.length">
-        <li v-for="(item,index) in repos" :key="index">
-          <a :href="item.html_url" target="_blank">{{item.name}}</a>
-          <div class="description" v-show="item.description">{{item.description}}</div>
-          <div class="info">
-            <span class="language" v-show="item.language">
-              <i class="icon-language"></i>
-              {{item.language}}
-            </span>
-            <span class="forks" v-show="item.forks">
-              <i class="icon-fork"></i>
-              {{item.forks}}
-            </span>
-            <span class="star" v-show="item.stargazers_count">
-              <i class="icon-star"></i>
-              {{item.stargazers_count}}
-            </span>
-          </div>
-        </li>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        repos: [],
-      }
-    },
-    mounted() {
-      this.$github({
-        url: 'https://api.github.com/users/wildcn/repos',
-        method: 'get',
-      }).then((data) => {
-        if (data.status === 200) {
-          this.repos = data.data
-        }
-      })
-    },
-  }
+  export default {}
 </script>
 
 <style lang="scss" scoped>
@@ -78,6 +36,7 @@
   .card {
     width: 300px;
     margin: 20px auto;
+    box-sizing: border-box;
     .avatar {
       width: 200px;
       height: 150px;
@@ -108,9 +67,7 @@
     }
   }
   .introduce {
-    border-bottom: 1px solid #ebebeb;
-    padding-bottom: 20px;
-    margin: 20px auto;
+    padding-bottom: 10px;
     .name {
       font-size: 18px;
       color: #333;
@@ -130,8 +87,8 @@
         z-index: 1;
       }
       &:after {
-        left:auto;
-        right:0;
+        left: auto;
+        right: 0;
       }
     }
     .autograph {
@@ -164,7 +121,7 @@
       }
     }
     .repos {
-      margin: 20px 0px 20px 20px;
+      // margin: 20px 0px 20px 20px;
       padding: 0px;
       text-align: left;
       overflow-y: scroll;

@@ -63,7 +63,7 @@ export default class PostsModel {
       }
       return response.content;
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   }
   async fetchMeta () {
@@ -141,7 +141,6 @@ export default class PostsModel {
   async createComment (param) {
     param.post = this.id;
     wp.comments().create(param).then(data => {
-      console.log("PostsModel -> createComment -> data", data)
     })
   }
   isValidPost (data) {

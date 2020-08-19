@@ -52,21 +52,27 @@ export default class PostCollection {
         categoryCollection.more(),
         // 获取媒体
         mediaCollection.more()
-      ],'postCollection/prepareMaterial'
+      ], 'postCollection/prepareMaterial'
     )
   }
   async fetchList (options = {}) {
+
+    const params = JSON.parse(JSON.stringify(options));
+    const { categories } = params;
+    delete params.categories;
     try {
       await this.prepareMaterial();
     } catch (err) {
-    console.log("PostCollection -> fetchList -> err", err)
     }
-    let param = Object.assign({}, this.param, options);
-  
-
-    const response = await wp.posts().param(param).order('desc').orderby('date');
+    let param = Object.assign({}, this.param, params);
+    let response;
+    if (categories) {
+      response = await wp.posts().categories(categories).param(param).order('desc').orderby('date');
+    }else{
+      response = await wp.posts().param(param).order('desc').orderby('date');
+    }
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async (item) => await new PostModel(item)),'postCollectin/fetchList')
+    const list = await Promise.complete(response.map(async (item) => await new PostModel(item)), 'postCollectin/fetchList')
     this.list = [].concat(this.list, list);
     this.list = uniqBy(this.list, 'id');
     this.fetchMap();

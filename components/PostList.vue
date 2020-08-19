@@ -2,7 +2,7 @@
   <div class="post-list">
     <ul>
       <li
-        v-for="(item,index) in postCollection.list"
+        v-for="(item,index) in list"
         :key="index"
         :class="`animation-other-${getAnimationIndex(index)}`"
       >
@@ -26,66 +26,36 @@
             </span>
             <span class="tags" v-show="item.tagsCollection.length">
               <i class="icon-tag"></i>
-              <a
-                :href="tag.link"
-                v-for="(tag,idx) in item.tagsCollection"
-                :key="idx"
-              >{{tag.name}}</a>
+              <a :href="tag.link" v-for="(tag,idx) in item.tagsCollection" :key="idx">{{tag.name}}</a>
             </span>
-            <span class="comment" v-show="item.commentsCollection.length">
+            <a
+              class="comment"
+              :href="`/posts/${item.id}?#comment`"
+              v-show="item.commentsCollection.length"
+            >
               <i class="icon-comment"></i>
               {{item.commentsCollection.length}}
-            </span>
+            </a>
           </div>
         </div>
       </li>
     </ul>
-    <el-button
-      size="medium"
-      plain
-      :disabled="noData"
-      v-show="postCollection.list.length"
-      class="more"
-      @click="more"
-    >{{noData?'暂无更多数据':'加载更多'}}</el-button>
   </div>
 </template>
 
 <script>
-  import { PostCollection } from '~/resource'
   import svg from '~/assets/images/logo-0.3.png'
 
   export default {
     props: {
-      value: Array | Object,
+      list: Array | Object,
     },
     data() {
       return {
-        postCollection: PostCollection.getInstance(),
-        noData: false,
-        scrollTop: 0,
         svg,
       }
     },
-    computed: {
-      posts() {
-        return this.value
-      },
-    },
     methods: {
-      more() {
-        this.scrollTop =
-          document.documentElement.scrollTop || document.body.scrollTop
-        this.postCollection
-          .more()
-          .then(() => {
-            this.$emit('input', this.postCollection.list)
-            window.scrollTo(0, this.scrollTop)
-          })
-          .catch((err) => {
-            this.noData = true
-          })
-      },
       getAnimationIndex(index) {
         ++index
         if (index % 10 === 0) {
@@ -102,7 +72,9 @@
   @import '~@/styles/var.scss';
   .post-list {
     width: 100%;
-    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
   }
   .post-list ul li {
     text-align: left;
@@ -183,7 +155,14 @@
       a {
         color: #b4b4b4;
         padding: 0 2px;
+        &:hover{
+          color: $primary;
+        }
       }
+    }
+    .comment {
+      color: #b4b4b4;
+      padding: 0 2px;
     }
     .category,
     .category a {

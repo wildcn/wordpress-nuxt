@@ -35,9 +35,8 @@
         const id = +ctx.params.id
         var categories
         try {
-          categories = await categoryCollection.fetchCategoriesByRootId(id)
+          categories = await categoryCollection.fetchCategoriesByRootIds(id)
         } catch (err) {
-          console.log('Data -> err', err)
           categories = []
         }
 
@@ -49,7 +48,6 @@
           categories,
         }
       } catch (err) {
-        console.log('Data -> err', err)
       }
     },
     data() {

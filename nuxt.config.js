@@ -28,22 +28,22 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', 'data-n-head': true, href: 'https://cdn.bootcdn.net/ajax/libs/highlight.js/10.1.2/styles/androidstudio.min.css' },
-      { rel: 'stylesheet', 'data-n-head': true, href: 'https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css' }
+      { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/highlight.js/10.1.2/styles/androidstudio.min.css' },
+      { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css' }
     ],
     script: [{
-      src: 'https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js',
+      src: '//cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js',
     }, {
-      src: 'http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
+      src: '//cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
     }, {
-      src: 'https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js',
+      src: '//cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js',
       ssr: true
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.js',
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/lodash.js/4.17.15/lodash.min.js',
     }, {
-      src: process.env.NODE_ENV !== 'development' ? 'https://hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4' : ''
+      src: process.env.NODE_ENV !== 'development' ? '//hm.baidu.com/hm.js?6ff688864f4019814e3d6ffc4c508fa4' : ''
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js'
     }, {
@@ -61,7 +61,8 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    '~/plugins/wpapi/index.js',
+    '~/plugins/init',
+    '~/plugins/wpapi',
     '~/plugins/github',
     '~/plugins/extend',
     '~/plugins/highlight',
@@ -95,7 +96,7 @@ export default {
   },
   // proxy: {
   //   '/wp': {
-  //     target: config.baseUrl,
+  //     target: config.baseWpApiUrl,
   //     changeOrigin: true
   //   }
   // },

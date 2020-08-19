@@ -24,9 +24,7 @@ export default class CategoryCollection {
 
     return categoryCollection;
   }
-  // toJSON(){
-  //   return JSON.parse(JSON.stringify(this));
-  // }
+  
   async more (options) {
     if (this.list.length >= (this._paging && this._paging.total)) {
       throw new Error('no data')
@@ -39,9 +37,9 @@ export default class CategoryCollection {
     const param = Object.assign(this.param, options);
     const response = await wp.categories().param(param);
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async tag => await new CategoryModel(tag)),'category');
+    const list = await Promise.complete(response.map(async tag => await new CategoryModel(tag)), 'category');
     this.list = [].concat(this.list, list);
-    this.list = uniqBy(this.list,'id');
+    this.list = uniqBy(this.list, 'id');
     this.fetchMap();
     return list
   }
@@ -53,11 +51,19 @@ export default class CategoryCollection {
     const rootCategories = await wp.categories().order('asc').orderby('id').param('per_page', 100).param('parent', 0);
     return rootCategories;
   }
-  async fetchCategoriesByRootId (id) {
-    const root = await wp.categories().id(id);
-    const children = await wp.categories().param('parent', id);
-    const response = await Promise.complete([].concat(root, children).map(async item => await new CategoryModel(item)),'fetchCategoriesByRootId');
+  async fetchCategoriesByRootIds (id) {
+    const ids = [].concat(id);
+    if (!this.list.length) {
+      await this.more();
+    }
+    const response = this.list.filter((item => {
+      return (ids.indexOf(item.id) !== -1 || ids.indexOf(item.parent) !== -1)
+    }))
     return response;
+  }
+  filterCategoriesByName (condations = []) {
+    const list = this.list;
+
   }
 }
 

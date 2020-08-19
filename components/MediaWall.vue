@@ -10,6 +10,7 @@
 </template>
 
 <script>
+  import uniqBy from 'lodash'
   export default {
     name: 'media-wall',
     props: {
@@ -17,7 +18,19 @@
     },
     computed: {
       list() {
-        return this.collection.list.filter((item) => item.post)
+        const obj = {}
+        const items = this.collection.list.filter((item) => item.post)
+        if (items.length) {
+          const result = items.reduce((res, item) => {
+            if (!obj[item.post]) {
+              res.push(item)
+              obj[item.post] = 1
+            }
+            return res;
+          }, [])
+          return result
+        }
+        return items
       },
     },
   }
@@ -44,7 +57,7 @@
         width: 90px;
         height: 90px;
         display: block;
-        background-size: contain;
+        background-size: cover;
         background-position: center center;
         transition: 0.5s all;
         &:hover {

@@ -24,7 +24,7 @@
               </div>
             </template>
             <template slot="children">
-              <ul>
+              <ul v-show="item.children">
                 <CommentBox
                   @reply="val=>$emit('reply',val)"
                   v-for="(child,index) in item.children"
@@ -56,13 +56,13 @@
 
 <style lang="scss" scoped>
   .comment-list {
-    width: 650px;
+    border-top: 1px solid #eee;
+    width: 100%;
     background-color: #fff;
     text-align: left;
     padding: 20px;
     box-sizing: border-box;
     border-radius: 5px;
-    margin-bottom: 30px;
     .menu {
       display: flex;
       justify-content: space-between;

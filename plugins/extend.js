@@ -8,7 +8,6 @@ Promise.complete = function (task, flag) {
   return new Promise((resolve, reject) => {
     var len = task.length;
     for (let i = 0; i < len; i++) {
-      // console.log("Promise.complete -> task[i]", task[i])
       if (!!task[i] && typeof task[i].then === 'function') {
         task[i].then(data => {
           resolveVal.push(data);
@@ -22,7 +21,6 @@ Promise.complete = function (task, flag) {
           }
         })
       } else {
-        console.log("Promise.complete -> not Promise, flag:: ", flag)
         if (i === len - 1) {
           resolve(resolveVal);
         }

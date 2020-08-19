@@ -13,16 +13,20 @@
           :menu-trigger="menuTrigger"
           active-text-color="#ffffff"
           unique-opened
+          router
         >
-          <component
-            :is="item.children?'el-submenu':'el-menu-item'"
+          <el-menu-item
             v-for="(item,index) in categories"
             :key="index"
             :index="`/category/${item.id}`"
           >
+            <nuxt-link :to="`/category/${item.id}`">{{item.name}}</nuxt-link>
+          </el-menu-item>
+          <!-- <component :is="'el-menu-item'" v-for="(item,index) in categories" :key="index">
             <template v-if="item.children" slot="title" index="/category">
               {{item.name}}
             </template>
+            
             <el-menu-item class="sub-title">
               <nuxt-link :to="`/category/${item.id}`">{{item.name}}</nuxt-link>
             </el-menu-item>
@@ -37,8 +41,15 @@
             <template v-if="!item.children" index="/category">
               <nuxt-link :to="`/category/${item.id}`">{{item.name}}</nuxt-link>
             </template>
-          </component>
+           
+          </component>-->
         </el-menu>
+      </div>
+    </div>
+    <div class="about">
+      <div class="phone">
+        <i class="icon-phone"></i>
+        <Qrcode class="qrcode"></Qrcode>
       </div>
     </div>
   </div>
@@ -46,11 +57,13 @@
 
 <script>
   import { CategoryCollection } from '../resource'
+  import Qrcode from './Qrcode'
   import Logo from './Logo'
   export default {
     name: 'dlq-header',
     components: {
       Logo,
+      Qrcode,
     },
     data() {
       return {
@@ -75,7 +88,7 @@
             }
           })
         } catch (er) {
-          console.log(er)
+          console.error(er)
         }
         return Object.values(map)
       },
@@ -118,7 +131,7 @@
     display: inline-block;
     height: 50px;
     position: absolute;
-    top: 5px; 
+    top: 5px;
     left: 15px;
     a {
       display: block;
@@ -129,6 +142,38 @@
       width: auto;
       &:hover {
         fill: $primary;
+      }
+    }
+  }
+  .about {
+    position: absolute;
+    right: 0px;
+    top: 0;
+    height: 60px;
+    color: #fff;
+    .phone {
+      width: 60px;
+      height: 60px;
+      line-height: 60px;
+      .icon-phone {
+        font-size: 24px;
+        animation: zy 2.5s 0.15s linear infinite;
+        -moz-animation: zy 2.5s 0.15s linear infinite;
+        -o-animation: zy 2.5s 0.15s linear infinite;
+      }
+      &:hover {
+        color: $primary;
+        .qrcode {
+          right: 0;
+        }
+      }
+      .qrcode {
+        transition: 0.1s all;
+        position: absolute;
+        right: -210px;
+        bottom: -180px;
+        width: 150px;
+        height: 150px;
       }
     }
   }

@@ -3,7 +3,7 @@
     <div class="avatar" v-show="item.author_avatar_urls">
       <img :src="item.author_avatar_urls[96]" />
     </div>
-    <div class="main">
+    <div class="comment-main">
       <div class="meta">
         <div class="name">{{item.author_name}}</div>
         <div class="time">{{getTime(item.date)}}</div>
@@ -59,7 +59,7 @@
         border-radius: 50%;
       }
     }
-    .main {
+    .comment-main {
       flex: 1;
     }
     &:last-child .content {

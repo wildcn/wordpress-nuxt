@@ -103,14 +103,16 @@
       }
       .qrcode {
         position: absolute;
-        right: 0;
-        background-color: #f9f9f9;
-        top: 50%;
-        transform: translate(110%,-50%);
+        right: -20px;
+        top: 0%;
+        transform: translate(0%,-100%);
         display: none;
         width: 180px;
         transition: 0.5s all;
         height: 180px;
+      }
+      &:hover .qrcode{
+        display: block!important;
       }
       .page-btn-icon {
         transition: 0.5s all;
@@ -127,9 +129,7 @@
           font-size: 30px;
         }
       }
-      &:hover .qrcode{
-        display: block;
-      }
+      
       &:hover .page-btn-icon,
       &.active .page-btn-icon {
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);

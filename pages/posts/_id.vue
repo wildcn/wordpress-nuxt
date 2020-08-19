@@ -13,12 +13,31 @@
         </div>
       </div>
     </transition>
-    <div id="content">
+    <div id="content" :class="{full:contentExtend}">
       <div class="main">
         <h1>{{postModel.title.rendered}}</h1>
-        <div class="info">
-        </div>
-        <div class="txt" v-highlight v-html="postModel.content.rendered"></div>
+        <div class="excerpt" v-show="postModel.excerpt" v-html="postModel.excerpt.rendered"></div>
+        <div
+          class="icon-extend"
+          :class="{transform:contentExtend}"
+          @click="contentExtend = !contentExtend"
+        ></div>
+        <div class="info"></div>
+        <!-- <div
+          class="featured_media"
+          v-show="postModel.featuredMediaModel && postModel.featuredMediaModel.source_url"
+        >
+          <img :src="postModel.featuredMediaModel.source_url" />
+        </div> -->
+        <div class="txt" v-highlight v-html="formatContent"></div>
+        <CommentList
+          name="comment"
+          @reply="reply"
+          class="common"
+          v-show="commentList.length"
+          :commentList="commentList"
+          :postModel="postModel"
+        ></CommentList>
       </div>
       <div class="secondary">
         <div class="item" v-show="validRecommand.length">
@@ -48,17 +67,8 @@
         </div>
       </div>
     </div>
-    <CommentList
-      name="comment"
-      @reply="reply"
-      class="common"
-      v-show="commentList.length"
-      :commentList="commentList"
-      :postModel="postModel"
-    ></CommentList>
-
     <CommentFixed
-      :commentList="commentList"
+      :commentList="postModel.commentsCollection"
       :reply="replyItem"
       @cancel="replyItem = {}"
       v-model="commentContent"
@@ -84,9 +94,12 @@
 
   const categoryCollection = CategoryCollection.getInstance()
   const mediaCollection = MediaCollection.getInstance()
-
+  let contentExtend = false
+  if (process.client) {
+    contentExtend = localStorage.getItem('contentExtend') === 'true'
+  }
   export default {
-    layout:'post',
+    layout: 'post',
     components: {
       PageTool,
       Logo,
@@ -125,8 +138,18 @@
         id,
       }
     },
+    watch: {
+      contentExtend(val) {
+        localStorage.setItem('contentExtend', val)
+        this.$notify({
+          message: '您的布局修改已被记录!',
+          type: 'success',
+          dangerouslyUseHTMLString: true,
+          duration: 1500,
+        })
+      },
+    },
     head() {
-      console.log('head -> this.postModel', this.postModel)
       const des = this.postModel.excerpt.rendered.replace(/<\/?.+?>/g, '')
       const description = `${this.postModel.title.rendered} ${des} ——合生——杜连强的博客`
       return {
@@ -149,6 +172,7 @@
         rewardDialog: false,
         commentContent: '',
         replyItem: {},
+        contentExtend,
       }
     },
     mounted() {
@@ -165,8 +189,31 @@
       validRecommand() {
         return this.recommand.filter((item) => item.id !== this.id)
       },
+      h2List() {
+        if (this.postModel.content && this.postModel.content.rendered) {
+          const content = this.postModel.content.rendered
+          var idx = 1
+          content.replace(/<h2>/g, function (match) {
+            return '<h2 name="h2-' + idx + '">'
+          })
+          const h2 = content.match(/<h2>(.+)<\/h2>/g)
+          console.log('h2List -> h2', h2)
+          return h2
+        }
+        return []
+      },
+      formatContent() {
+        if (this.postModel.content && this.postModel.content.rendered) {
+          const content = this.postModel.content.rendered
+          var idx = 1
+          content.replace(/<h2>/g, function (match) {
+            return '<h2 name="h2-' + idx + '">'
+          })
+          return content
+        }
+        return ''
+      },
       commentList() {
-        console.log("commentList -> this.postModel.commentsCollection", this.postModel.commentsCollection)
         if (this.postModel.commentsCollection.length === 0) {
           return []
         }
@@ -284,9 +331,5 @@
         fill: $primary;
       }
     }
-  }
-  .common {
-    width: 960px;
-    margin: 0 auto;
   }
 </style>

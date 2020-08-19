@@ -33,14 +33,13 @@ export const _fields = {
   [TYPES.CATEGORIES]: [
     'count',
     'id',
-    'link',
     'name',
-    'taxonomy',
     'parent'
   ],
   [TYPES.COMMENTS]: [
     'author',
     'author_name',
+    'author_url',
     'id',
     'date',
     'link',

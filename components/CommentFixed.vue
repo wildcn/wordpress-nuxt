@@ -71,11 +71,15 @@
 
 <script>
   import Qrcode from '../components/Qrcode'
+  import { CommentCollection } from '../resource'
+
+  const commentCollection = CommentCollection.getInstance()
   export default {
     props: {
       value: String,
       reply: Object,
       postModel: Object,
+      commentList: Array,
     },
     components: {
       Qrcode,
@@ -154,10 +158,29 @@
           }
           if (this.author_email) {
             param.author_email = this.author_email
+            param.author_url = this.author_email
           } else {
             this.$message.warning('邮箱为必填项')
             return
           }
+          const commentAuthors =
+            []
+              .concat(commentCollection.list, this.commentList)
+              .reduce(
+                (res, item) =>
+                  Object.assign(res, {
+                    [item.author_name]: item.author_url.replace(/http:\/\//, ''),
+                  }),
+                {}
+              ) || {}
+
+          if (commentAuthors[this.author_name]) {
+            if (this.author_email !== commentAuthors[this.author_name]) {
+              this.$message.error('评论用户冲突，请确认姓名和邮箱填写正确！')
+              return
+            }
+          }
+
           this.$emit('update', param)
           this.cacheVisitorInfo()
           this.inputActive = false
@@ -189,6 +212,7 @@
     background-color: #fff;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
     padding: 10px 0;
+    transition: 0.3s all;
     .reply {
       width: 500px;
       text-align: left;
