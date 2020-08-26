@@ -366,6 +366,7 @@
       }
     }
   }
+  
   .wechat-share-dialog {
     .title {
       font-size: 24px;

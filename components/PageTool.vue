@@ -39,7 +39,10 @@
   import Qrcode from './Qrcode'
   export default {
     props: {
-      date: String | Object,
+      date: {
+        type: [String, Object],
+        default: () => +new Date(),
+      },
     },
     components: {
       Qrcode,
@@ -60,8 +63,15 @@
 
 <style lang="scss" scoped>
   @import '../styles/var';
+
   .page-tool {
     font-family: monospace;
+    text-align: center;
+    position: fixed;
+    left: 50%;
+    margin-left: -580px;
+    top: 90px;
+    width: 80px;
     text-align: center;
     #date {
       .year {
@@ -105,14 +115,14 @@
         position: absolute;
         right: -20px;
         top: 0%;
-        transform: translate(0%,-100%);
+        transform: translate(0%, -100%);
         display: none;
         width: 180px;
         transition: 0.5s all;
         height: 180px;
       }
-      &:hover .qrcode{
-        display: block!important;
+      &:hover .qrcode {
+        display: block !important;
       }
       .page-btn-icon {
         transition: 0.5s all;
@@ -129,7 +139,7 @@
           font-size: 30px;
         }
       }
-      
+
       &:hover .page-btn-icon,
       &.active .page-btn-icon {
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);

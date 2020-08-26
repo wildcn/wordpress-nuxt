@@ -1,5 +1,5 @@
 <template>
-  <div class="post-list">
+  <div id="post-list">
     <ul>
       <li
         v-for="(item,index) in list"
@@ -26,7 +26,11 @@
             </span>
             <span class="tags" v-show="item.tagsCollection.length">
               <i class="icon-tag"></i>
-              <a :href="tag.link" v-for="(tag,idx) in item.tagsCollection" :key="idx">{{tag.name}}</a>
+              <a
+                :href="`/tags/${tag.id}`"
+                v-for="(tag,idx) in item.tagsCollection"
+                :key="idx"
+              >{{tag.name}}</a>
             </span>
             <a
               class="comment"
@@ -70,13 +74,13 @@
 
 <style lang="scss" scoped>
   @import '~@/styles/var.scss';
-  .post-list {
+  #post-list {
     width: 100%;
     background-color: #fff;
     border-radius: 5px;
     overflow: hidden;
   }
-  .post-list ul li {
+  #post-list ul li {
     text-align: left;
     position: relative;
     width: 100%;
@@ -128,14 +132,17 @@
     }
     .abstract {
       margin: 8px 0 8px;
-      font-size: 13px;
+      font-size: 13px!important;
       line-height: 20px;
-      color: #999;
+      color: #999!important;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;
       p {
+        font-size: 13px!important;
+        line-height: 20px;
+        color: #999!important;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
@@ -155,7 +162,7 @@
       a {
         color: #b4b4b4;
         padding: 0 2px;
-        &:hover{
+        &:hover {
           color: $primary;
         }
       }

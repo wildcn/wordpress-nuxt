@@ -1,29 +1,16 @@
 <template>
   <div class="page-category">
-    <div class="column" v-for="(val,key,index) in postsByCategories" :key="index">
-      <div
-        v-if="categoriesMap[key] && categoriesMap[key].name"
-        class="title"
-      >{{categoriesMap[key].name}}</div>
-      <ul>
-        <li v-for="(item,idx) in val" :key="idx">
-          <a :href="`/posts/${item.id}`">{{item.title.rendered}}</a>
-          <p class="info" v-html="item.excerpt.rendered"></p>
-          <el-tag
-            class="tag"
-            size="mini"
-            v-for="(tag,itag) in item.tagsCollection"
-            :key="itag"
-            v-show="item.tagsCollection.length"
-          >{{tag.name}}</el-tag>
-        </li>
-      </ul>
+    <div>
+      <div class="main">
+        <post-list :list="posts"></post-list>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
   import wp from '../../plugins/wpapi'
+  import PostList from '../../components/PostList';
   import { CategoryCollection, PostCollection } from '../../resource'
 
   const categoryCollection = CategoryCollection.getInstance()
@@ -41,14 +28,18 @@
         }
 
         const ids = categories.map((item) => item.id)
-        const posts = await postCollection.fetchList({ categories: ids })
+        const posts = await postCollection.fetchList({ categories: ids,per_page:20 })
 
         return {
           posts,
           categories,
+          categoryCollection
         }
       } catch (err) {
       }
+    },
+    components: {
+      PostList,
     },
     data() {
       return {
@@ -57,25 +48,9 @@
       }
     },
     mounted () {
-      // categoryCollection.list = this.categories.list;
-      // categoryCollection.fetchMap();
-    },
-    computed: {
-      categoriesMap() {
-        return this.categories.reduce(
-          (pre, next) => Object.assign(pre, { [next.id]: next }),
-          {}
-        )
-      },
-      postsByCategories() {
-        return this.posts.reduce((pre, next) => {
-          next.categories.forEach((categoryId) => {
-            pre[categoryId] = pre[categoryId] || []
-            pre[categoryId].push(next)
-          })
-          return pre
-        }, {})
-      },
+      categoryCollection.list = this.categoryCollection.list;
+      categoryCollection._paging = this.categoryCollection._paging;
+      categoryCollection.fetchMap();
     },
   }
 </script>

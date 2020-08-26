@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+    <page-tool class="left-tool"></page-tool>
     <div class="main">
       <post-list :list="posts"></post-list>
       <el-button
@@ -22,16 +23,21 @@
 
 <script>
   import PostList from '../components/PostList'
-  import List from '../components/List';
-  import Github from '../components/Github';
+  import PageTool from '../components/PageTool';
+  import List from '../components/List'
+  import Github from '../components/Github'
   import Card from '../components/Card'
   import wp from '~/plugins/wpapi'
-  import { PostCollection, CategoryCollection,CommentCollection } from '../resource'
+  import {
+    PostCollection,
+    CategoryCollection,
+    CommentCollection,
+  } from '../resource'
   import { CATEGORY_NAMES, CATEGORIES } from '../constants/categories'
 
   const postCollection = PostCollection.getInstance()
   const categoryCollection = CategoryCollection.getInstance()
-  const commentCollection = CommentCollection.getInstance();
+  const commentCollection = CommentCollection.getInstance()
 
   const mainCategories = [CATEGORIES.FRONT_END, CATEGORIES.FULL_STACK]
   const literatureCategories = [CATEGORIES.LITERATURE, CATEGORIES.DIARY]
@@ -39,6 +45,9 @@
   export default {
     async mounted() {
       this.initCollection()
+      wp.posts().then((data) => {
+        console.log('mounted -> data', data)
+      })
     },
     async asyncData(ctx) {
       let posts = []
@@ -54,7 +63,9 @@
         const categoriesLiterature = await categoryCollection.fetchCategoriesByRootIds(
           literatureCategories
         )
-        const literaturePosts = await wp.posts().categories(categoriesLiterature.map((item) => item.id))
+        const literaturePosts = await wp
+          .posts()
+          .categories(categoriesLiterature.map((item) => item.id))
         // this.param = param;
         // this.posts = posts;
 
@@ -64,7 +75,7 @@
           literaturePosts,
           categoryCollection,
           postCollection,
-          commentCollection
+          commentCollection,
         }
       } catch (err) {
         return {
@@ -72,7 +83,7 @@
           posts,
           categoryCollection,
           postCollection,
-          commentCollection
+          commentCollection,
         }
       }
     },
@@ -92,7 +103,8 @@
       PostList,
       Card,
       List,
-      Github
+      Github,
+      PageTool
     },
     methods: {
       async initCollection() {

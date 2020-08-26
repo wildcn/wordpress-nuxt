@@ -1,7 +1,8 @@
-import config from './interface.config';
-import path from 'path';
 
-export default {
+
+const path = require('path');
+module.exports = {
+  telemetry: false, // 关闭nuxt编译时的询问
   /*
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
@@ -28,13 +29,16 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/highlight.js/10.1.2/styles/androidstudio.min.css' },
+      // 代码样式
+      { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/highlight.js/10.1.2/styles/atom-one-dark.min.css' },
       { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css' }
     ],
     script: [{
       src: '//cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js',
     }, {
       src: '//cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
+    }, {
+      src: '//cdn.bootcdn.net/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js',
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js',
       ssr: true

@@ -1,86 +1,100 @@
 <template>
-  <div id="article">
-    <page-tool class="left-tool" :date="postModel.date"></page-tool>
-    <transition name="fade">
-      <div class="header-fixed" v-if="fixedHeader">
-        <div class="logo">
-          <a href="/">
-            <Logo></Logo>
-          </a>
+  <div>
+    <page-tool :date="postModel.date"></page-tool>
+    <div id="article">
+      <transition name="fade">
+        <div class="header-fixed" v-if="fixedHeader">
+          <div class="logo">
+            <a href="/">
+              <Logo></Logo>
+            </a>
+          </div>
+          <div class="content">
+            <h1>{{postModel.title.rendered}}</h1>
+          </div>
         </div>
-        <div class="content">
+      </transition>
+      <div id="content" :class="{full:contentExtend}">
+        <div class="main">
           <h1>{{postModel.title.rendered}}</h1>
-        </div>
-      </div>
-    </transition>
-    <div id="content" :class="{full:contentExtend}">
-      <div class="main">
-        <h1>{{postModel.title.rendered}}</h1>
-        <div class="excerpt" v-show="postModel.excerpt" v-html="postModel.excerpt.rendered"></div>
-        <div
-          class="icon-extend"
-          :class="{transform:contentExtend}"
-          @click="contentExtend = !contentExtend"
-        ></div>
-        <div class="info"></div>
-        <!-- <div
+          <div class="excerpt" v-show="postModel.excerpt" v-html="postModel.excerpt.rendered"></div>
+          <div
+            class="icon-extend"
+            :class="{transform:contentExtend}"
+            @click="contentExtend = !contentExtend"
+          ></div>
+          <div class="info"></div>
+          <!-- <div
           class="featured_media"
           v-show="postModel.featuredMediaModel && postModel.featuredMediaModel.source_url"
         >
           <img :src="postModel.featuredMediaModel.source_url" />
-        </div> -->
-        <div class="txt" v-highlight v-html="formatContent"></div>
-        <CommentList
-          name="comment"
-          @reply="reply"
-          class="common"
-          v-show="commentList.length"
-          :commentList="commentList"
-          :postModel="postModel"
-        ></CommentList>
-      </div>
-      <div class="secondary">
-        <div class="item" v-show="validRecommand.length">
-          <div class="title">推荐阅读</div>
-          <div class="list">
-            <li v-for="(item,index) in validRecommand" :key="index">
-              <a :href="`/posts/${item.id}`">
-                <p>{{item.title.rendered}}</p>
-              </a>
-              <p class="des">
-                <el-tag
-                  type="info"
-                  size="mini"
-                  class="category"
-                  v-for="category in item.categoriesCollection"
-                  :key="category.id"
-                >{{category.name}}</el-tag>
-                <span class="excerpt" v-html="item.excerpt.rendered"></span>
-              </p>
+          </div>-->
+          <div class="txt" v-highlight v-html="formatContent"></div>
+          <CommentList
+            name="comment"
+            @reply="reply"
+            class="common"
+            v-show="commentList.length"
+            :commentList="commentList"
+            :postModel="postModel"
+          ></CommentList>
+        </div>
+        <div class="secondary">
+          <div class="item plain" v-show="column.length">
+            <div class="title">相关阅读</div>
+            <div class="list">
+              <li v-for="(item,index) in column" :key="index">
+                <a :href="`/posts/${item.id}`">
+                  <p>{{item.title.rendered}}</p>
+                </a>
+                <div class="info"></div>
+              </li>
+            </div>
+          </div>
+          <div class="item" v-show="validRecommand.length">
+            <div class="title">推荐阅读</div>
+            <div class="list">
+              <li v-for="(item,index) in validRecommand" :key="index">
+                <a :href="`/posts/${item.id}`">
+                  <p>{{item.title.rendered}}</p>
+                </a>
+                <p class="des">
+                  <el-tag
+                    type="info"
+                    size="mini"
+                    class="category"
+                    v-for="category in item.categoriesCollection"
+                    :key="category.id"
+                  >{{category.name}}</el-tag>
+                  <span class="excerpt" v-html="item.excerpt.rendered"></span>
+                </p>
 
-              <div class="info"></div>
-            </li>
+                <div class="info"></div>
+              </li>
+            </div>
+          </div>
+          <div class="item" v-if="mediaCollection.list && mediaCollection.list.length">
+            <MediaWall :collection="mediaCollection"></MediaWall>
           </div>
         </div>
-        <div class="item" v-if="mediaCollection.list && mediaCollection.list.length">
-          <MediaWall :collection="mediaCollection"></MediaWall>
-        </div>
       </div>
+      <CommentFixed
+        :commentList="postModel.commentsCollection"
+        :reply="replyItem"
+        @cancel="replyItem = {}"
+        v-model="commentContent"
+        @update="updateComment"
+        :postModel="postModel"
+      ></CommentFixed>
     </div>
-    <CommentFixed
-      :commentList="postModel.commentsCollection"
-      :reply="replyItem"
-      @cancel="replyItem = {}"
-      v-model="commentContent"
-      @update="updateComment"
-      :postModel="postModel"
-    ></CommentFixed>
   </div>
 </template>
 
 <script>
   import {
     PostModel,
+    PostCollection,
     CategoryCollection,
     CommentModel,
     MediaCollection,
@@ -94,6 +108,8 @@
 
   const categoryCollection = CategoryCollection.getInstance()
   const mediaCollection = MediaCollection.getInstance()
+  const postCollection = PostCollection.getInstance()
+
   let contentExtend = false
   if (process.client) {
     contentExtend = localStorage.getItem('contentExtend') === 'true'
@@ -113,6 +129,11 @@
       const content = await postModel.fetchContent()
 
       await categoryCollection.fetchList()
+      // 获取相关栏目列表
+      const column = await postCollection.fetchList({
+        categories: postModel.categories,
+      })
+
       // 获取推荐列表
       const sticky = await wp
         .posts()
@@ -136,6 +157,7 @@
         recommand,
         mediaCollection,
         id,
+        column,
       }
     },
     watch: {
@@ -170,6 +192,7 @@
         recommand: [],
         fixedHeader: false,
         rewardDialog: false,
+        column: [],
         commentContent: '',
         replyItem: {},
         contentExtend,
@@ -204,11 +227,7 @@
       },
       formatContent() {
         if (this.postModel.content && this.postModel.content.rendered) {
-          const content = this.postModel.content.rendered
-          var idx = 1
-          content.replace(/<h2>/g, function (match) {
-            return '<h2 name="h2-' + idx + '">'
-          })
+          var content = this.postModel.content.rendered
           return content
         }
         return ''
@@ -280,14 +299,7 @@
     overflow: hidden;
   }
 
-  .left-tool {
-    position: fixed;
-    left: 50%;
-    margin-left: -580px;
-    top: 90px;
-    width: 80px;
-    text-align: center;
-  }
+ 
   .header-fixed {
     position: fixed;
     right: 0;

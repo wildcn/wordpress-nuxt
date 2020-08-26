@@ -3,27 +3,38 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
+    "dev": "cross-env BASE_URL=https://admin.dulianqiang.com  nodemon server/index.js --watch server --exec babel-node",
+    "build": "cross-env BASE_URL=https://admin.dulianqiang.com nuxt build",
+    "start": "cross-env BASE_URL=https://admin.dulianqiang.com  nodemon server/index.js --watch server --exec babel-node",
+    "nuxtStart":"nuxt start",
     "generate": "nuxt generate",
     "export": "nuxt build --target static && nuxt export",
-    "serve": "nuxt serve"
+    "serve": "cross-env BASE_URL=https://admin.dulianqiang.com nuxt serve"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
+    "babel-cli": "^6.26.0",
     "nuxt": "^2.13.0",
     "wpapi": "^1.2.1"
   },
   "devDependencies": {
     "@nuxtjs/proxy": "^2.0.1",
+    "babel-node": "^0.0.1-security",
     "babel-plugin-component": "^1.1.1",
+    "body-parser": "^1.19.0",
+    "connect-redis": "^5.0.0",
+    "consola": "^2.15.0",
+    "cookie-parser": "^1.4.5",
     "cross-env": "^7.0.2",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "fs": "^0.0.1-security",
+    "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "qrcodejs2": "^0.0.2",
+    "redis": "^3.0.2",
     "sass": "^1.26.10",
     "sass-loader": "^9.0.2"
   }
