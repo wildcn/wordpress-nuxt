@@ -15,6 +15,9 @@
           unique-opened
           router
         >
+          <el-menu-item index="/">
+            <nuxt-link :to="`/`">HOME</nuxt-link>
+          </el-menu-item>
           <el-menu-item
             v-for="(item,index) in categories"
             :key="index"
@@ -47,7 +50,11 @@
       </div>
     </div>
     <div class="about">
-      <div class="phone">
+      <div class="contact factor" @click="aboutMe">
+        <i class="icon-resume"></i>
+        履历
+      </div>
+      <div class="phone factor">
         <i class="icon-phone"></i>
         <Qrcode class="qrcode"></Qrcode>
       </div>
@@ -91,6 +98,11 @@
           console.error(er)
         }
         return Object.values(map)
+      },
+    },
+    methods: {
+      aboutMe() {
+        this.$message.success('尚未开放简历，敬请期待！')
       },
     },
   }
@@ -151,18 +163,37 @@
     top: 0;
     height: 60px;
     color: #fff;
-    .phone {
-      width: 60px;
+    .factor {
       height: 60px;
       line-height: 60px;
-      .icon-phone {
-        font-size: 24px;
-        animation: zy 2.5s 0.15s linear infinite;
-        -moz-animation: zy 2.5s 0.15s linear infinite;
-        -o-animation: zy 2.5s 0.15s linear infinite;
+      display: inline-block;
+    }
+    .contact {
+      cursor: pointer;
+      padding: 0 20px;
+      transition: 0.2s all;
+      &,
+      i {
+        color: $logoColor;
+      }
+      i {
+        line-height: 60px;
       }
       &:hover {
-        color: $primary;
+        background-color: $primary;
+        &,
+        i {
+          color: #fff;
+        }
+      }
+    }
+    .phone {
+      width: 60px;
+      &:hover {
+        background-color: $primary;
+        i {
+          color: #fff;
+        }
         .qrcode {
           right: 0;
         }

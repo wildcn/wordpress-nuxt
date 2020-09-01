@@ -1,12 +1,15 @@
-export const TYPES = {
+const TYPES = {
   POSTS: 'posts',
   MEDIA: 'media',
   TAGS: 'tags',
   CATEGORIES: 'categories',
   COMMENTS: 'comments',
 }
+
+module.exports.TYPES = TYPES;
+
 // post接口返回字段约束
-export const _fields = {
+module.exports._fields = {
   [TYPES.POSTS]: [
     'author',
     'categories',
@@ -15,6 +18,7 @@ export const _fields = {
     'featured_media',
     'id',
     'tags',
+    'comment_count',
     'title',
   ],
   [TYPES.MEDIA]: [

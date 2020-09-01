@@ -1,12 +1,12 @@
 {
   "name": "dulianqiang",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "cross-env BASE_URL=https://admin.dulianqiang.com  nodemon server/index.js --watch server --exec babel-node",
     "build": "cross-env BASE_URL=https://admin.dulianqiang.com nuxt build",
     "start": "cross-env BASE_URL=https://admin.dulianqiang.com  nodemon server/index.js --watch server --exec babel-node",
-    "nuxtStart":"nuxt start",
+    "nuxtStart": "nuxt start",
     "generate": "nuxt generate",
     "export": "nuxt build --target static && nuxt export",
     "serve": "cross-env BASE_URL=https://admin.dulianqiang.com nuxt serve"
@@ -14,7 +14,9 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
     "babel-cli": "^6.26.0",
+    "mysql2": "^2.1.0",
     "nuxt": "^2.13.0",
+    "sequelize": "^6.3.4",
     "wpapi": "^1.2.1"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "fs": "^0.0.1-security",
+    "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "qrcodejs2": "^0.0.2",

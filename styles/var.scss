@@ -8,3 +8,11 @@ $info: #909399;
 
 // custom
 $wechatPrimary: #67c23a;
+$logoColor: rgb(242, 214, 0);
+
+.primary {
+  color: $primary!important;
+}
+.logo-color {
+  color: $logoColor;
+}

@@ -10,9 +10,12 @@
         <div class="content">{{name}}</div>
       </div>
     </transition>
-    <div id="content" :class="{full:contentExtend}">
+    <div class="tag-content" :class="{full:contentExtend}">
       <div class="tags-main">
-        <h1>标签：{{name}}</h1>
+        <h1>
+          <i class="icon-tag"></i>
+          {{name}}
+        </h1>
         <post-list :list="posts"></post-list>
       </div>
       <div class="secondary">
@@ -75,7 +78,7 @@
       // const id = +this.$route.params.id
       const tagModel = await new TagModel(id)
 
-      const posts = await postCollection.fetchList({ tags: id,per_page:20 })
+      const posts = await postCollection.fetchList({ tags: id, per_page: 20 })
       await categoryCollection.fetchList()
 
       // 获取推荐列表
@@ -135,8 +138,8 @@
       validRecommand() {
         return this.recommand.filter((item) => item.id !== this.id)
       },
-      name(){
-        return this.tagModel && this.tagModel.name || '标签';
+      name() {
+        return (this.tagModel && this.tagModel.name) || '标签'
       },
     },
     methods: {
@@ -163,6 +166,32 @@
     }
     h1 {
       margin-bottom: 30px;
+      border-bottom: 1px solid #fff;
+      padding-bottom: 10px;
+      color: #555;
+      i {
+        font-size: 1em;
+        padding-right: 10px;
+        color: $primary;
+      }
+    }
+  }
+  .tag-content {
+    margin: 30px auto;
+    width: 960px;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+    .main {
+      transition: 0.2s all;
+      background-color: #fff;
+      width: 650px;
+      padding: 20px;
+      border-radius: 5px;
+      box-sizing: border-box;
+      text-align: left;
+      flex: none;
+      position: relative;
     }
   }
   .header-fixed {

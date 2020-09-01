@@ -2,6 +2,7 @@
   <div class="page-category">
     <div>
       <div class="main">
+        <h2><i class="icon-column"></i>{{categories[0].name}}</h2>
         <post-list :list="posts"></post-list>
       </div>
     </div>
@@ -10,7 +11,7 @@
 
 <script>
   import wp from '../../plugins/wpapi'
-  import PostList from '../../components/PostList';
+  import PostList from '../../components/PostList'
   import { CategoryCollection, PostCollection } from '../../resource'
 
   const categoryCollection = CategoryCollection.getInstance()
@@ -28,15 +29,17 @@
         }
 
         const ids = categories.map((item) => item.id)
-        const posts = await postCollection.fetchList({ categories: ids,per_page:20 })
+        const posts = await postCollection.fetchList({
+          categories: ids,
+          per_page: 20,
+        })
 
         return {
           posts,
           categories,
-          categoryCollection
+          categoryCollection,
         }
-      } catch (err) {
-      }
+      } catch (err) {}
     },
     components: {
       PostList,
@@ -47,10 +50,10 @@
         categories: [],
       }
     },
-    mounted () {
-      categoryCollection.list = this.categoryCollection.list;
-      categoryCollection._paging = this.categoryCollection._paging;
-      categoryCollection.fetchMap();
+    mounted() {
+      categoryCollection.list = this.categoryCollection.list
+      categoryCollection._paging = this.categoryCollection._paging
+      categoryCollection.fetchMap()
     },
   }
 </script>
@@ -61,51 +64,16 @@
     margin: 20px auto;
     width: 960px;
     min-height: 600px;
-
-    .column {
-      width: 460px;
-      float: left;
-      background-color: #fff;
-      border-radius: 5px;
+    .main h2{
       text-align: left;
-      padding: 10px 20px;
-      box-sizing: border-box;
       margin-bottom: 20px;
-      &:nth-child(n) {
-        margin-right: 10px;
-      }
-      &:nth-child(2n) {
-        margin-left: 10px;
-      }
-      .title {
-        font-size: 20px;
-        height: 20px;
-        line-height: 20px;
-        margin: 10px 0;
-        border-bottom: 1px solid #f9f9f9;
-        padding-bottom: 10px;
-      }
-      li {
-        margin-bottom: 20px;
-      }
-      .info {
-        color: #999;
-        font-size: 12px;
-        margin-top: 5px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .tag {
-        margin-right: 5px;
-      }
-      li a {
-        line-height: 24px;
-        height: 24px;
-        color: #333;
-        &:hover {
-          color: $primary;
-        }
+      border-bottom: 1px solid #fff;
+      padding-bottom: 10px;
+      color:#555;
+      i{
+        font-size: 1em;
+        padding-right: 10px;
+        color: $primary;
       }
     }
   }

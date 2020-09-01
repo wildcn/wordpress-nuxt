@@ -40,7 +40,7 @@
   export default {
     props: {
       date: {
-        type: [String, Object],
+        type: [String, Object,Number],
         default: () => +new Date(),
       },
     },

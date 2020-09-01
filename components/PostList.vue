@@ -17,7 +17,7 @@
           <div class="abstract" v-html="item.excerpt.rendered"></div>
           <div class="media">
             <span class="tags category" v-show="item.categoriesCollection.length">
-              <i class="icon-category"></i>
+              <i class="icon-column"></i>
               <a
                 :href="`/category/${category.id}`"
                 v-for="(category,idx) in item.categoriesCollection"

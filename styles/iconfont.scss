@@ -1,11 +1,11 @@
 @font-face {
-  font-family: "iconfont"; /* project id 1979540 */
-  src: url("//at.alicdn.com/t/font_1979540_qf31jzu9rbf.eot");
-  src: url("//at.alicdn.com/t/font_1979540_qf31jzu9rbf.eot?#iefix") format("embedded-opentype"),
-    url("//at.alicdn.com/t/font_1979540_qf31jzu9rbf.woff2") format("woff2"),
-    url("//at.alicdn.com/t/font_1979540_qf31jzu9rbf.woff") format("woff"),
-    url("//at.alicdn.com/t/font_1979540_qf31jzu9rbf.ttf") format("truetype"),
-    url("//at.alicdn.com/t/font_1979540_qf31jzu9rbf.svg#iconfont") format("svg");
+  font-family: 'iconfont';  /* project id 1979540 */
+  src: url('//at.alicdn.com/t/font_1979540_jo4xuj8k86.eot');
+  src: url('//at.alicdn.com/t/font_1979540_jo4xuj8k86.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_1979540_jo4xuj8k86.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_1979540_jo4xuj8k86.woff') format('woff'),
+  url('//at.alicdn.com/t/font_1979540_jo4xuj8k86.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_1979540_jo4xuj8k86.svg#iconfont') format('svg');
 }
 
 $font: (
@@ -34,6 +34,8 @@ $font: (
   heart_1: "\e963",
   extend: "\e626",
   copy: "\e624",
+  resume: "\e61c",
+  column: "\e65e",
 );
 .iconfont {
   font-family: "iconfont" !important;
