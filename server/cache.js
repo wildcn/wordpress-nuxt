@@ -1,5 +1,5 @@
 const redisConfig = {
-  host: '47.96.10.90',
+  host: '127.0.0.1,
   port: '6379',
   db: 0,
   password: 'tubage097633'
