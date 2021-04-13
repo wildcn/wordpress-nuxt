@@ -1,7 +1,8 @@
 <template>
   <li class="comment-box">
-    <div class="avatar" v-show="item.author_avatar_urls">
-      <img :src="item.author_avatar_urls[96]" />
+    <div class="avatar">
+      <img v-if="item.author_avatar_urls" :src="item.author_avatar_urls" />
+      <img :src="avatar" />
     </div>
     <div class="comment-main">
       <div class="meta">
@@ -9,7 +10,7 @@
         <div class="time">{{getTime(item.date)}}</div>
         <div class="floor" v-show="page">#{{page}}</div>
       </div>
-      <div class="content" v-html="item.content.rendered"></div>
+      <div class="content" v-html="formatContent"></div>
       <slot name="tools"></slot>
       <div class="line"></div>
       <slot name="children"></slot>
@@ -18,6 +19,7 @@
 </template>
 
 <script>
+  import md5 from 'md5'
   export default {
     props: {
       item: Object,
@@ -26,6 +28,12 @@
     computed: {
       page() {
         return this.index + 1
+      },
+      formatContent() {
+        return decodeURIComponent(this.item.content).replace('\n', '<br />')
+      },
+      avatar() {
+        return `https://cn.gravatar.com/avatar/${md5(this.item.author_email)}`
       },
     },
     methods: {
@@ -67,7 +75,7 @@
       padding-bottom: 0;
       border: none;
     }
-    .meta{
+    .meta {
       position: relative;
     }
     .name {

@@ -1,4 +1,4 @@
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 import TagModel from './TagModel';
 import { uniqBy } from 'lodash';
 const tagId = Symbol();
@@ -10,8 +10,8 @@ export default class TagCollection {
   requestStatus = false;
   mapList = {}
   param = {
-    per_page: 100,
-    page: 1
+    limit: 100,
+    offset: 0
   }
   constructor(id) {
     if (id !== tagId) {
@@ -26,18 +26,21 @@ export default class TagCollection {
     return categoryCollection;
   }
   async more (options) {
-    if (this.list.length === (this._paging && this._paging.total)) {
+    if (this.list.length === (this._paging && this._paging.count)) {
       throw new Error('no data')
     }
-    this.list.length !== 0 && ++this.param.page;
+    if (this.list.length) {
+      this.param.offset = (1 + this.param.offset) * this.param.limit;
+    }
     const moreList = await this.fetchList(options);
     return moreList;
   }
   async fetchList (options = {}) {
     const param = Object.assign(this.param, options);
-    const response = await wp.tags().param(param);
+    const response = await wpr.tags.read(param)
+
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async tag => await new TagModel(tag)),'tagCollection/fetchList');
+    const list = response.rows;
     this.list = [].concat(this.list, list);
     this.list = uniqBy(this.list, 'id');
     this.fetchMap();

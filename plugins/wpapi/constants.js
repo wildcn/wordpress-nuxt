@@ -41,15 +41,13 @@ module.exports._fields = {
     'parent'
   ],
   [TYPES.COMMENTS]: [
-    'author',
+    'user_id',
     'author_name',
-    'author_url',
+    'author_email',
     'id',
     'date',
-    'link',
     'content',
     'parent',
-    'author_avatar_urls',
     'post'
   ]
 }

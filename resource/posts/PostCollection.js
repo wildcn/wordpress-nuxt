@@ -1,4 +1,4 @@
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 import PostModel from './PostModel';
 import { isEmpty, isPlainObject, uniqBy } from 'lodash';
 import { CategoryModel, CategoryCollection } from '../categories';
@@ -17,10 +17,11 @@ const mediaCollection = MediaCollection.getInstance();
 
 export default class PostCollection {
   param = {
-    per_page: 10,
-    page: 1
+    limit: 10,
+    offset: 0
   }
   list = []
+  stickyList = []
   constructor(id) {
     if (id !== categoryId) {
       throw new Error(`Can not create a PostCollection instance.`);
@@ -34,10 +35,13 @@ export default class PostCollection {
     return postCollection;
   }
   async more (options) {
-    if (this.list.length === (this._paging && this._paging.total)) {
+    if (this.list.length === (this._paging && this._paging.count)) {
       throw new Error('no data')
     }
-    this.list.length !== 0 && ++this.param.page;
+    if (this.list.length) {
+      this.param.offset += this.param.limit
+    }
+
     const moreList = this.fetchList(options);
     return moreList;
   }
@@ -58,25 +62,60 @@ export default class PostCollection {
   async fetchList (options = {}) {
 
     const params = JSON.parse(JSON.stringify(options));
-    const { categories } = params;
-    delete params.categories;
-    try {
-      await this.prepareMaterial();
-    } catch (err) {
-    }
+    // try {
+    //   await this.prepareMaterial();
+    // } catch (err) {
+    //   console.error("PostCollection -> fetchList -> err", err)
+    // }
     let param = Object.assign({}, this.param, params);
-    let response;
-    if (categories) {
-      response = await wp.posts().categories(categories).param(param).order('desc').orderby('date');
-    }else{
-      response = await wp.posts().param(param).order('desc').orderby('date');
+
+    if (param.categories && Array.isArray(param.categories)) {
+      param.categories = param.categories.join(',')
     }
+
+    const response = await wpr.posts.read(param);
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async (item) => await new PostModel(item)), 'postCollectin/fetchList')
-    this.list = [].concat(this.list, list);
-    this.list = uniqBy(this.list, 'id');
-    this.fetchMap();
-    return list
+    try {
+      const list = await Promise.complete(response.rows.map((item) => new PostModel(item)), 'postCollectin/fetchList')
+      this.list = [].concat(this.list, list);
+      this.list = uniqBy(this.list, 'id');
+      this.fetchMap();
+      return list
+    } catch (err) {
+      console.error("PostCollection -> fetchList -> err", err)
+    }
+  }
+  // 获取置顶文章列表
+  async fetchStickyPosts (opts = { limit: 5, skip: 0 }) {
+    const { limit = 5, skip = 0 } = opts;
+    const options = await wpr.options.read({ option_name: 'sticky_posts' });
+    if (options.rows && options.rows.length) {
+      const [{ value }] = options.rows;
+      function searializeStickyOptions (val) {
+        const validData = val.match(/\d+/g);
+        const count = validData.shift();
+        const postIds = validData.filter((item, index) => index % 2 !== 0).sort((a, b) => b - a)
+        // 跳过skip
+        if (opts.skip) {
+          const idx = postIds.indexOf(opts.skip.toString());
+          postIds.splice(idx, 1);
+        }
+        return {
+          count,
+          postIds
+        }
+      }
+
+      const { postIds, count } = searializeStickyOptions(value);
+      const ids = postIds.slice(0, opts.limit);
+      const { rows } = await wpr.posts.read({ id: ids });
+      return {
+        rows,
+        count,
+        limit,
+        skip
+      }
+    }
   }
   fetchMap (options) {
     this.mapList = this.list.reduce((pre, next) => Object.assign(pre, { [next.id]: next }), {})

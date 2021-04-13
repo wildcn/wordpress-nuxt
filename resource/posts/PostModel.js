@@ -3,7 +3,7 @@ import { CategoryModel, CategoryCollection } from '../categories';
 import { TagModel, TagCollection } from '../tags';
 import { MediaModel, MediaCollection } from '../media';
 import { CommentModel, CommentCollection } from '../comments';
-import wp, { wps } from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 
 
 
@@ -14,14 +14,7 @@ const mediaCol = MediaCollection.getInstance();
 
 export default class PostsModel {
   id = null;
-  featured_media = null;
-  status = 'publish';
-  categoriesCollection = [];
-  tagsCollection = [];
-  featuredMediaModel = {};
-  mediaCollection = [];
   commentsCollection = [];
-
   constructor(args) {
     // 同步是为了SSR能拿到全部数据
     return new Promise((resolve, reject) => {
@@ -32,78 +25,33 @@ export default class PostsModel {
         })
       } else if (isPlainObject(args) && this.isValidPost(args)) {
         Object.assign(this, args);
-        this.init().then(() => {
-          resolve(this);
-        }).catch(err => {
-        })
+        resolve(this);
       } else {
         reject('postsModel args is invalid')
       }
     })
   }
-  async init () {
-
-    try {
-      await Promise.complete([
-        this.fetchCategories(),
-        this.fetchMedias(),
-        this.fetchTags(),
-        this.fetchComments()
-      ], 'postModel init ')
-      return this;
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
   async fetchContent () {
     try {
-      const response = await wp.posts({ _fields: 'content' }).id(this.id);
-      if (response.content) {
-        this.content = response.content;
+      const { rows } = await wpr.posts.read({ _fields: ['content', 'id'], id: this.id });
+      if (rows[0].content) {
+        this.content = decodeURIComponent(rows[0].content)
       }
-      return response.content;
+      return this.content;
     } catch (err) {
       console.error(err)
     }
   }
   async fetchMeta () {
-    const response = await wp.posts().id(this.id);
-    if (this.isValidPost(response)) {
-      Object.assign(this, response);
-      await this.init();
+    const response = await wpr.posts.read({ id: this.id });
+    const item = response.rows[0];
+    if (this.isValidPost(item)) {
+      Object.assign(this, item);
+      // await this.init();
     }
     return this;
   }
 
-  async fetchCategories () {
-    const categories = this.categories || [];
-    if (categories.length) {
-      this.categoriesCollection = await Promise.complete(categories.map(async id => {
-        if (categoriesCol.mapList[id]) {
-          return categoriesCol.mapList[id]
-        }
-        return await new CategoryModel(id);
-      }), 'fetchCategories')
-    }
-    return;
-  }
-  async fetchTags () {
-    const tags = this.tags || [];
-    if (tags.length) {
-      this.tagsCollection = await Promise.complete(tags.map(async id => {
-        if (tagCol.mapList[id]) {
-          return tagCol.mapList[id];
-        }
-        const response = await new TagModel(id);
-        if (response.name) {
-          return response
-        }
-        throw new Error(response);
-      }), 'fetchTags')
-
-    }
-    return;
-  }
   async fetchMedias () {
     let media = this.media || [];
     if (isInteger(this.featured_media) && this.featured_media !== 0) {
@@ -124,19 +72,11 @@ export default class PostsModel {
     return;
 
   }
+  // 获取评论
   async fetchComments () {
-    if (commentCol.list.length === 0) {
-      await commentCol.more({per_page:100});
-    }
-    if (commentCol.postMapList && commentCol.postMapList[this.id]) {
-      this.commentsCollection = commentCol.postMapList[this.id]
-    } else {
-      // try {
-      //   const commentIds = await wps.comments.post(this.id);
-      // } catch (err) {
-      // }
-    }
-    return;
+    const { rows, _paging } = await wpr.comments.read({ post: this.id });
+    this.commentsCollection = rows;
+    this.commentsPaging = _paging;
   }
   async createComment (param) {
     param.post = this.id;
@@ -144,7 +84,7 @@ export default class PostsModel {
     })
   }
   isValidPost (data) {
-    return data.id && data.title.rendered;
+    return data.id && data.title;
   }
 }
 

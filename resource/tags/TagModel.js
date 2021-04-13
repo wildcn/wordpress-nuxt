@@ -1,5 +1,5 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
-import wp, { wps } from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 
 export default class TagModel {
   id = null;
@@ -23,9 +23,10 @@ export default class TagModel {
   }
   async fetchMeta () {
     try {
-      const response = await wp.tags().id(this.id);
-      if (this.isValidTag(response)) {
-        Object.assign(this, response);
+      const response = await wpr.tags.read({ id: this.id })
+      const res = response.rows && response.rows[0]
+      if (this.isValidTag(res)) {
+        Object.assign(this, res);
       }
     } catch (err) {
       console.error(err)

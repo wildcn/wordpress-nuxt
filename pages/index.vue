@@ -23,11 +23,12 @@
 
 <script>
   import PostList from '../components/PostList'
-  import PageTool from '../components/PageTool';
+  import PageTool from '../components/PageTool'
   import List from '../components/List'
   import Github from '../components/Github'
   import Card from '../components/Card'
-  import wp from '~/plugins/wpapi'
+  import wpr from '~/plugins/wp-xhr'
+
   import {
     PostCollection,
     CategoryCollection,
@@ -45,9 +46,6 @@
   export default {
     async mounted() {
       this.initCollection()
-      wp.posts().then((data) => {
-        console.log('mounted -> data', data)
-      })
     },
     async asyncData(ctx) {
       let posts = []
@@ -63,11 +61,13 @@
         const categoriesLiterature = await categoryCollection.fetchCategoriesByRootIds(
           literatureCategories
         )
-        const literaturePosts = await wp
-          .posts()
-          .categories(categoriesLiterature.map((item) => item.id))
-        // this.param = param;
-        // this.posts = posts;
+        const { rows: literaturePosts } = await wpr.posts.read({
+          categories: categoriesLiterature.map((item) => item.id).join(','),
+        })
+
+        // this.param = param
+        // this.literaturePosts = literaturePosts
+        // this.posts = posts
 
         return {
           param,
@@ -78,6 +78,7 @@
           commentCollection,
         }
       } catch (err) {
+        console.error('mounted -> err', err)
         return {
           param,
           posts,
@@ -104,7 +105,7 @@
       Card,
       List,
       Github,
-      PageTool
+      PageTool,
     },
     methods: {
       async initCollection() {
@@ -151,12 +152,13 @@
     }
     .main {
       width: 650px;
-      flex: 1;
+      flex: none;
       margin-top: 20px;
       // background-color: #fff;
     }
     .secondary {
       width: 300px;
+      margin-top: 20px;
     }
   }
   .more {

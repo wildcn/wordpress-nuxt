@@ -1,5 +1,5 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 
 export default class MediaModel {
   id = null;
@@ -23,7 +23,8 @@ export default class MediaModel {
     })
   }
   async fetchMeta () {
-    const response = await wp.media().id(this.id);
+    // 此处id为wp_posts表内的id
+    const response = await wpr.media.read({ id: this.id })
     if (this.isValidMedia(response)) {
       Object.assign(this, response);
     }

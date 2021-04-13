@@ -1,9 +1,9 @@
 <template>
   <div class="card item">
     <div class="avatar">
-      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
-      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
-      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg" />
+      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg?imageView2/2/w/150/h/150" />
+      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg?imageView2/2/w/150/h/150" />
+      <img src="http://cdn.dulianqiang.com/2020/08/未标题-5.jpg?imageView2/2/w/150/h/150" />
     </div>
     <div class="introduce">
       <div class="name">
@@ -34,8 +34,7 @@
 <style lang="scss" scoped>
   @import '~/styles/var.scss';
   .card {
-    width: 300px;
-    margin: 20px auto;
+    width: 100%;
     box-sizing: border-box;
     .avatar {
       width: 200px;

@@ -2,6 +2,9 @@
 
 const path = require('path');
 module.exports = {
+  env: {
+    baseUrl: process.env.BASE_URL
+  },
   telemetry: false, // 关闭nuxt编译时的询问
   /*
   ** Nuxt rendering mode
@@ -28,7 +31,7 @@ module.exports = {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '杜连强 前端工程师 网文爱好者' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/x-icon', href: 'http://cdn.dulianqiang.com/2020/09/favicon.ico' },
       // 代码样式
       { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/highlight.js/10.1.2/styles/atom-one-dark.min.css' },
       { rel: 'stylesheet', 'data-n-head': true, href: '//cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css' }
@@ -36,11 +39,8 @@ module.exports = {
     script: [{
       src: '//cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.js',
     }, {
-      src: '//cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
-    }, {
-      src: '//cdn.bootcdn.net/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js',
-    }, {
       src: '//cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js',
+
       ssr: true
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.js',
@@ -52,6 +52,10 @@ module.exports = {
       src: '//cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js'
     }, {
       src: '//cdn.bootcdn.net/ajax/libs/vue-meta/2.4.0/vue-meta.min.js'
+    }, {
+      src: '//cdn.bootcss.com/highlight.js/8.0/highlight.min.js',
+    }, {
+      src: '//cdn.bootcdn.net/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js',
     }]
   },
   /*
@@ -66,12 +70,12 @@ module.exports = {
   */
   plugins: [
     '~/plugins/init',
-    '~/plugins/wpapi',
     '~/plugins/github',
     '~/plugins/extend',
     '~/plugins/highlight',
     '~/plugins/router',
     '~/plugins/moment',
+    '~/plugins/wp-xhr',
   ],
   /*
   ** Auto import components

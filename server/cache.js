@@ -1,18 +1,9 @@
-const redisConfig = {
-  host: '47.96.10.90',
-  port: '6379',
-  db: 0,
-  password: 'tubage097633'
-};
+const { redisConfig, REDIS_EXPIRE_TIME } = require('./config')
 let redis = require("redis");
 const redisClient = redis.createClient(redisConfig);
 
-const CONSTANTS = {
-  EXPIRE_TIME: 60 * 60 * 24 // 默认过期时间
-}
-
 module.exports = {
-  set: (key, val, expireTime = CONSTANTS.EXPIRE_TIME) => {
+  set: (key, val, expireTime = REDIS_EXPIRE_TIME) => {
     redisClient.set(key, JSON.stringify(val));
     redisClient.expire(key, expireTime);
   },
@@ -21,9 +12,9 @@ module.exports = {
       if (err != null || val == null) {
         reject(err);
       } else {
-        try{
+        try {
           resolve(JSON.parse(val));
-        }catch(err){
+        } catch (err) {
           reject(err)
         }
       }

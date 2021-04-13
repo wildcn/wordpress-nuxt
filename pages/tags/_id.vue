@@ -24,17 +24,19 @@
           <div class="list">
             <li v-for="(item,index) in validRecommand" :key="index">
               <a :href="`/posts/${item.id}`">
-                <p>{{item.title.rendered}}</p>
+                <p>{{item.title}}</p>
               </a>
               <p class="des">
                 <el-tag
                   type="info"
                   size="mini"
                   class="category"
-                  v-for="category in item.categoriesCollection"
+                  v-for="category in item.categories"
                   :key="category.id"
                 >{{category.name}}</el-tag>
-                <span class="excerpt" v-html="item.excerpt.rendered"></span>
+                <span class="excerpt">
+                  <p>{{item.excerpt}}</p>
+                </span>
               </p>
 
               <div class="info"></div>
@@ -55,7 +57,6 @@
     TagModel,
   } from '../../resource'
   import PostList from '../../components/PostList'
-  import wp from '../../plugins/wpapi'
   import Logo from '../../components/Logo'
   import CommentFixed from '../../components/CommentFixed'
   import CommentList from '../../components/CommentList'
@@ -78,20 +79,13 @@
       // const id = +this.$route.params.id
       const tagModel = await new TagModel(id)
 
-      const posts = await postCollection.fetchList({ tags: id, per_page: 20 })
+      const posts = await postCollection.fetchList({ tags: id, limit: 20 })
       await categoryCollection.fetchList()
 
       // 获取推荐列表
-      const sticky = await wp
-        .posts()
-        .sticky(true)
-        .perPage(5)
-        .order('desc')
-        .orderby('date')
-      const recommand = await Promise.complete(
-        sticky.map(async (item) => await new PostModel(item)),
-        'posts/id asyncData'
-      )
+      const sticky = await postCollection.fetchStickyPosts({ skip: id })
+
+      const recommand = sticky.rows
 
       return {
         categoryCollection,
@@ -136,7 +130,10 @@
     },
     computed: {
       validRecommand() {
-        return this.recommand.filter((item) => item.id !== this.id)
+        if (this.recommand && this.recommand.length) {
+          return this.recommand.filter((item) => item.id !== this.id)
+        }
+        return []
       },
       name() {
         return (this.tagModel && this.tagModel.name) || '标签'

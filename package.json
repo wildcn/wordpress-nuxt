@@ -3,21 +3,22 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "dev": "cross-env BASE_URL=https://admin.dulianqiang.com  nodemon server/index.js --watch server --exec babel-node",
-    "build": "cross-env BASE_URL=https://admin.dulianqiang.com nuxt build",
-    "start": "cross-env BASE_URL=https://admin.dulianqiang.com  nodemon server/index.js --watch server --exec babel-node",
+    "dev": "cross-env NODE_ENV=development BASE_URL=http://127.0.0.1:3001 nodemon server/server.js --watch server --exec babel-node",
+    "build": "cross-env BASE_URL=https://dulianqiang.com nuxt build",
+    "start": "cross-env BASE_URL=https://dulianqiang.com nuxt start",
     "nuxtStart": "nuxt start",
-    "generate": "nuxt generate",
+    "generate": "cross-env BASE_URL=https://dulianqiang.com nuxt generate",
     "export": "nuxt build --target static && nuxt export",
-    "serve": "cross-env BASE_URL=https://admin.dulianqiang.com nuxt serve"
+    "serve": "cross-env BASE_URL=https://dulianqiang.com nuxt serve",
+    "server": "nodemon server/index.js --watch server --exec babel-node",
+    "test": "nodemon test/resource.js --watch server --exec babel-node"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
     "babel-cli": "^6.26.0",
     "mysql2": "^2.1.0",
     "nuxt": "^2.13.0",
-    "sequelize": "^6.3.4",
-    "wpapi": "^1.2.1"
+    "sequelize": "^6.3.4"
   },
   "devDependencies": {
     "@nuxtjs/proxy": "^2.0.1",
@@ -30,9 +31,11 @@
     "cross-env": "^7.0.2",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "events": "^3.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "fs": "^0.0.1-security",
+    "md5": "^2.3.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
