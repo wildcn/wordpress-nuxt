@@ -1,10 +1,10 @@
 <template>
-  <div class="common" v-show="commentList.length" id="comment">
+  <div class="common" v-if="commentList.length" id="comment">
     <div class="comment-list">
       <div class="menu">
         <div class="h1">
           <span class="title">全部评论</span>
-          <span class="total">{{postModel.commentsCollection.length}}</span>
+          <span class="total">{{postModel.commentsPaging.count}}</span>
         </div>
       </div>
       <div class="list">
@@ -24,7 +24,7 @@
               </div>
             </template>
             <template slot="children">
-              <ul v-show="item.children">
+              <ul v-if="item.children">
                 <CommentBox
                   @reply="val=>$emit('reply',val)"
                   v-for="(child,index) in item.children"
@@ -44,6 +44,7 @@
 <script>
   import CommentBox from './CommentBox'
   export default {
+    name:'comment-list',
     components: {
       CommentBox,
     },

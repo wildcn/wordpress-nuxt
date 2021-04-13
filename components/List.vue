@@ -4,10 +4,12 @@
     <ul class="list">
       <li v-for="(item,index) in list" :key="index">
         <a :href="`/posts/${item.id}`">
-          <p>{{item.title.rendered}}</p>
+          <p>{{item.title}}</p>
         </a>
         <p class="des">
-          <span class="excerpt" v-html="item.excerpt.rendered"></span>
+          <span class="excerpt">
+            <p>{{item.excerpt}}</p>
+          </span>
         </p>
         <div class="info"></div>
       </li>

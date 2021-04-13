@@ -1,0 +1,36 @@
+### posts
+http://localhost:3001/wp/posts?limit=10&offset=30&categories=1,2,3,4,19,20,73,92,104,109,110,115
+
+###
+http://localhost:3000/wp/posts?tags=92
+### 
+http://localhost:3000/wp/posts?_fields=content&ID=271
+### gategories
+GET http://localhost:3000/wp/categories
+### 
+
+GET http://localhost:3000/wp/comments?post=176
+
+###
+POST http://localhost:3000/wp/comments
+content-type: application/json
+
+{
+  "author_name":"测试1",
+  "author_email":"test@test.com",
+  "content":"这里是测试评论数据",
+  "parent":0,
+  "post":1
+}
+
+###
+GET http://localhost:3000/wp/tags?offset=60&limit=10
+
+
+###
+http://localhost:3000/wp/options?limit=1&option_name=sticky_posts
+
+
+###
+
+http://dev.dulianqiang.com/wp/tags?offset=60&limit=10

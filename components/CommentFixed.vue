@@ -3,7 +3,7 @@
     <div class="content">
       <div class="reply" v-if="reply.id">
         <span class="reply-author_name">@{{reply.author_name}}</span>
-        <span class="reply-content" v-html="reply.content.rendered"></span>
+        <span class="reply-content">{{replyContent}}</span>
         <a @click="$emit('cancel')" class="close" href="javascript:;">
           <i class="el-icon el-icon-close"></i>
         </a>
@@ -92,6 +92,15 @@
         }
       })
     },
+    computed: {
+      replyContent() {
+        return (
+          this.reply &&
+          this.reply.content &&
+          decodeURIComponent(this.reply.content)
+        )
+      },
+    },
     data() {
       return {
         content: this.value,
@@ -158,21 +167,19 @@
           }
           if (this.author_email) {
             param.author_email = this.author_email
-            param.author_url = this.author_email
           } else {
             this.$message.warning('邮箱为必填项')
             return
           }
+
           const commentAuthors =
-            []
-              .concat(commentCollection.list, this.commentList)
-              .reduce(
-                (res, item) =>
-                  Object.assign(res, {
-                    [item.author_name]: item.author_url.replace(/http:\/\//, ''),
-                  }),
-                {}
-              ) || {}
+            this.commentList.reduce(
+              (res, item) =>
+                Object.assign(res, {
+                  [item.author_name]: item.author_email,
+                }),
+              {}
+            ) || {};
 
           if (commentAuthors[this.author_name]) {
             if (this.author_email !== commentAuthors[this.author_name]) {
@@ -366,7 +373,7 @@
       }
     }
   }
-  
+
   .wechat-share-dialog {
     .title {
       font-size: 24px;

@@ -1,5 +1,5 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 
 export default class CommentModel {
   id = null;
@@ -25,9 +25,9 @@ export default class CommentModel {
     })
   }
   async fetchMeta () {
-    const response = await wp.comments().id(this.id);
-    if (this.isValidComment(response)) {
-      Object.assign(this, response);
+    const response = await wp.comments.read({id:this.id});
+    if (response.rows && response.rows[0] && this.isValidComment(response.rows[0])) {
+      Object.assign(this, response.rows[0]);
     }
   }
   static async createComment (param = {}) {

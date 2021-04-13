@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 632e47923cb7fb5f5ff02c95db7ab0d70666fcb6 root <root@localhost.(none)> 1599036456 +0800	clone: from git@github.com:wildcn/wordpress-nuxt.git
+632e47923cb7fb5f5ff02c95db7ab0d70666fcb6 1206fc4bb5d7dca0c85a5e4f5aa048638b0410be root <root@localhost.(none)> 1599037769 +0800	1206fc4bb5d7dca0c85a5e4f5aa048638b0410be: updating HEAD
+1206fc4bb5d7dca0c85a5e4f5aa048638b0410be 1206fc4bb5d7dca0c85a5e4f5aa048638b0410be root <root@iZ2zebcdfzd650spiz6ddbZ.(none)> 1618302907 +0800	checkout: moving from 1206fc4bb5d7dca0c85a5e4f5aa048638b0410be to dev
+1206fc4bb5d7dca0c85a5e4f5aa048638b0410be d1bb27c4e88d35bfe30a04d98f3159169a941e63 root <root@iZ2zebcdfzd650spiz6ddbZ.(none)> 1618302917 +0800	commit: update
+d1bb27c4e88d35bfe30a04d98f3159169a941e63 d1bb27c4e88d35bfe30a04d98f3159169a941e63 root <root@iZ2zebcdfzd650spiz6ddbZ.(none)> 1618302951 +0800	checkout: moving from d1bb27c4e88d35bfe30a04d98f3159169a941e63 to bak

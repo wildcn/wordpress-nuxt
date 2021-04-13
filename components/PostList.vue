@@ -8,38 +8,30 @@
       >
         <div
           class="wrap-media"
-          v-show="item.featuredMediaModel.id"
-          :class="{'unload':!item.featuredMediaModel.id}"
-          :style="{'background-image':'url('+item.featuredMediaModel.source_url || svg+')'}"
+          v-show="item.featured_media"
+          :class="{'unload':!item.featured_media}"
+          :style="{'background-image':'url('+`${item.featured_media}?imageView2/1/w/150/h/100/q/100` || svg+')'}"
         ></div>
         <div class="content">
-          <a :href="`/posts/${item.id}`" class="title" v-html="item.title.rendered"></a>
-          <div class="abstract" v-html="item.excerpt.rendered"></div>
+          <a :href="`/posts/${item.id}`" class="title" v-html="item.title"></a>
+          <div class="abstract" v-html="item.excerpt"></div>
           <div class="media">
-            <span class="tags category" v-show="item.categoriesCollection.length">
+            <span class="tags category" v-show="item.categories && item.categories.length">
               <i class="icon-column"></i>
               <a
                 :href="`/category/${category.id}`"
-                v-for="(category,idx) in item.categoriesCollection"
+                v-for="(category,idx) in item.categories"
                 :key="idx"
               >{{category.name}}</a>
             </span>
-            <span class="tags" v-show="item.tagsCollection.length">
+            <span class="tags" v-show="item.tags && item.tags.length">
               <i class="icon-tag"></i>
-              <a
-                :href="`/tags/${tag.id}`"
-                v-for="(tag,idx) in item.tagsCollection"
-                :key="idx"
-              >{{tag.name}}</a>
+              <a :href="`/tags/${tag.id}`" v-for="(tag,idx) in item.tags" :key="idx">{{tag.name}}</a>
             </span>
-            <a
-              class="comment"
-              :href="`/posts/${item.id}?#comment`"
-              v-show="item.commentsCollection.length"
-            >
+            <span v-show="item.comment_count" class="comment">
               <i class="icon-comment"></i>
-              {{item.commentsCollection.length}}
-            </a>
+              {{item.comment_count}}
+            </span>
           </div>
         </div>
       </li>
@@ -132,17 +124,17 @@
     }
     .abstract {
       margin: 8px 0 8px;
-      font-size: 13px!important;
+      font-size: 13px !important;
       line-height: 20px;
-      color: #999!important;
+      color: #999 !important;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;
       p {
-        font-size: 13px!important;
+        font-size: 13px !important;
         line-height: 20px;
-        color: #999!important;
+        color: #999 !important;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;

@@ -1,6 +1,6 @@
 <template>
   <div class="container page-component__scroll">
-    <el-backtop class="top" :bottom='10'>
+    <el-backtop class="top" :bottom="10">
       <i class="icon-top"></i>
     </el-backtop>
     <dlq-header></dlq-header>

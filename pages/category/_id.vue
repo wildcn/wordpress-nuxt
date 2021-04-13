@@ -2,7 +2,7 @@
   <div class="page-category">
     <div>
       <div class="main">
-        <h2><i class="icon-column"></i>{{categories[0].name}}</h2>
+        <h2 v-if="categories[0]"><i class="icon-column"></i>{{categories[0].name}}</h2>
         <post-list :list="posts"></post-list>
       </div>
     </div>
@@ -10,7 +10,6 @@
 </template>
 
 <script>
-  import wp from '../../plugins/wpapi'
   import PostList from '../../components/PostList'
   import { CategoryCollection, PostCollection } from '../../resource'
 
@@ -18,8 +17,14 @@
   const postCollection = PostCollection.getInstance()
   export default {
     name: 'category',
+    mounted() {
+      categoryCollection.list = this.categoryCollection.list
+      categoryCollection._paging = this.categoryCollection._paging
+      categoryCollection.fetchMap()
+    },
     async asyncData(ctx) {
       try {
+        // const id = +this.$route.params.id;
         const id = +ctx.params.id
         var categories
         try {
@@ -31,8 +36,12 @@
         const ids = categories.map((item) => item.id)
         const posts = await postCollection.fetchList({
           categories: ids,
-          per_page: 20,
+          limit: 20,
         })
+
+        // this.posts = posts;
+        // this.categories = categories;
+        // this.categoryCollection = categoryCollection;
 
         return {
           posts,
@@ -50,11 +59,7 @@
         categories: [],
       }
     },
-    mounted() {
-      categoryCollection.list = this.categoryCollection.list
-      categoryCollection._paging = this.categoryCollection._paging
-      categoryCollection.fetchMap()
-    },
+    
   }
 </script>
 

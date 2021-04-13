@@ -10,14 +10,16 @@
             </a>
           </div>
           <div class="content">
-            <h1>{{postModel.title.rendered}}</h1>
+            <h1>{{postModel.title}}</h1>
           </div>
         </div>
       </transition>
       <div id="content" :class="{full:contentExtend}">
         <div class="main">
-          <h1>{{postModel.title.rendered}}</h1>
-          <div class="excerpt" v-show="postModel.excerpt" v-html="postModel.excerpt.rendered"></div>
+          <h1>{{postModel.title}}</h1>
+          <div class="excerpt" v-show="postModel.excerpt">
+            <p>{{postModel.excerpt}}</p>
+          </div>
           <div
             class="icon-extend"
             :class="{transform:contentExtend}"
@@ -35,7 +37,7 @@
             name="comment"
             @reply="reply"
             class="common"
-            v-show="commentList.length"
+            v-if="commentList.length"
             :commentList="commentList"
             :postModel="postModel"
           ></CommentList>
@@ -46,7 +48,7 @@
             <div class="list">
               <li v-for="(item,index) in column" :key="index">
                 <a :href="`/posts/${item.id}`">
-                  <p>{{item.title.rendered}}</p>
+                  <p>{{item.title}}</p>
                 </a>
                 <div class="info"></div>
               </li>
@@ -57,29 +59,32 @@
             <div class="list">
               <li v-for="(item,index) in validRecommand" :key="index">
                 <a :href="`/posts/${item.id}`">
-                  <p>{{item.title.rendered}}</p>
+                  <p>{{item.title}}</p>
                 </a>
                 <p class="des">
                   <el-tag
                     type="info"
                     size="mini"
                     class="category"
-                    v-for="category in item.categoriesCollection"
+                    v-for="category in item.categories"
                     :key="category.id"
                   >{{category.name}}</el-tag>
-                  <span class="excerpt" v-html="item.excerpt.rendered"></span>
+                  <span class="excerpt">
+                    <p>{{item.excerpt}}</p>
+                  </span>
                 </p>
 
                 <div class="info"></div>
               </li>
             </div>
           </div>
-          <div class="item" v-if="mediaCollection.list && mediaCollection.list.length">
+          <!-- <div class="item" v-if="mediaCollection.list && mediaCollection.list.length">
             <MediaWall :collection="mediaCollection"></MediaWall>
-          </div>
+          </div> -->
         </div>
       </div>
       <CommentFixed
+        v-if="postModel.commentsCollection"
         :commentList="postModel.commentsCollection"
         :reply="replyItem"
         @cancel="replyItem = {}"
@@ -100,7 +105,7 @@
     MediaCollection,
   } from '../../resource'
   import PageTool from '../../components/PageTool'
-  import wp from '../../plugins/wpapi'
+  import wpr from '../../plugins/wp-xhr'
   import Logo from '../../components/Logo'
   import CommentFixed from '../../components/CommentFixed'
   import CommentList from '../../components/CommentList'
@@ -123,41 +128,41 @@
       CommentList,
       MediaWall,
     },
+    mounted() {
+      window.addEventListener('scroll', this.changeScroll)
+      categoryCollection.list = this.categoryCollection.list
+      categoryCollection._paging = this.categoryCollection._paging
+      categoryCollection.fetchMap()
+
+    },
     async asyncData(ctx) {
       const id = +ctx.params.id
+      // const id = +this.$route.params.id
       const postModel = await new PostModel(id)
-      const content = await postModel.fetchContent()
-
+      await postModel.fetchContent();
+      await postModel.fetchComments();
+      
       await categoryCollection.fetchList()
       // 获取相关栏目列表
-      const column = await postCollection.fetchList({
-        categories: postModel.categories,
-      })
-
+      const column = await wpr.posts.read({categories:postModel.categories.map((item) => item.id).join(',')})
       // 获取推荐列表
-      const sticky = await wp
-        .posts()
-        .sticky(true)
-        .perPage(5)
-        .order('desc')
-        .orderby('date')
-      const recommand = await Promise.complete(
-        sticky.map(async (item) => await new PostModel(item)),
-        'posts/id asyncData'
-      )
-      // 获取照片墙
-      await mediaCollection.fetchList({
-        _fields: 'id,post,source_url',
-        per_page: 9,
-      })
+      // const sticky = await postCollection.fetchStickyPosts({skip:id});
+      
+      // const recommand = sticky.rows;
+      const recommand = [];
+
+      // this.categoryCollection = categoryCollection
+      // this.postModel = postModel
+      // this.recommand = recommand
+      // this.id = id
+      // this.column = column.rows
 
       return {
         categoryCollection,
         postModel,
         recommand,
-        mediaCollection,
         id,
-        column,
+        column:column.rows,
       }
     },
     watch: {
@@ -172,10 +177,10 @@
       },
     },
     head() {
-      const des = this.postModel.excerpt.rendered.replace(/<\/?.+?>/g, '')
-      const description = `${this.postModel.title.rendered} ${des} ——合生——杜连强的博客`
+      const des = this.postModel.excerpt
+      const description = `${this.postModel.title} ${des} ——合生——杜连强的博客`
       return {
-        title: this.postModel.title.rendered + '——合生——杜连强的博客',
+        title: this.postModel.title + '——合生——杜连强的博客',
         description: description,
         meta: [
           {
@@ -198,42 +203,32 @@
         contentExtend,
       }
     },
-    mounted() {
-      window.addEventListener('scroll', this.changeScroll)
-      categoryCollection.list = this.categoryCollection.list
-      categoryCollection._paging = this.categoryCollection._paging
-      categoryCollection.fetchMap()
-
-      mediaCollection.list = this.mediaCollection.list
-      mediaCollection._paging = this.mediaCollection._paging
-      mediaCollection.fetchMap()
-    },
+    
     computed: {
       validRecommand() {
         return this.recommand.filter((item) => item.id !== this.id)
       },
       h2List() {
-        if (this.postModel.content && this.postModel.content.rendered) {
-          const content = this.postModel.content.rendered
+        if (this.postModel.content && this.postModel.content) {
+          const content = this.postModel.content
           var idx = 1
           content.replace(/<h2>/g, function (match) {
             return '<h2 name="h2-' + idx + '">'
           })
           const h2 = content.match(/<h2>(.+)<\/h2>/g)
-          console.log('h2List -> h2', h2)
           return h2
         }
         return []
       },
       formatContent() {
-        if (this.postModel.content && this.postModel.content.rendered) {
-          var content = this.postModel.content.rendered
-          return content
+        if (this.postModel.content) {
+          var content = this.postModel.content;
+          return content;
         }
         return ''
       },
       commentList() {
-        if (this.postModel.commentsCollection.length === 0) {
+        if (Array.isArray(this.postModel.commentsCollection) && this.postModel.commentsCollection.length === 0) {
           return []
         }
         const list = this.postModel.commentsCollection.map((item) => {
@@ -272,7 +267,7 @@
         CommentModel.createComment(param)
           .then((data) => {
             this.$message.success('评论成功！')
-            this.postModel.commentsCollection.push(data)
+            this.postModel.fetchComments();
             this.replyItem = {}
             this.commentContent = ''
           })
@@ -299,7 +294,6 @@
     overflow: hidden;
   }
 
- 
   .header-fixed {
     position: fixed;
     right: 0;

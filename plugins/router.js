@@ -8,11 +8,11 @@ const commentCollection = CommentCollection.getInstance();
 
 
 const initCollection = () => {
-  postCollection.param.page = 1;
-  tagCollection.param.page = 1;
-  categoryCollection.param.page = 1;
-  mediaCollection.param.page = 1;
-  commentCollection.param.page = 1;
+  postCollection.param.offset = 0;
+  tagCollection.param.offset = 0;
+  categoryCollection.param.offset = 0;
+  mediaCollection.param.offset = 0;
+  commentCollection.param.offset = 0;
 }
 
 export default ({ app }) => {

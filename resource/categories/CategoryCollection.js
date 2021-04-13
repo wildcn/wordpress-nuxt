@@ -1,5 +1,5 @@
 import { MediaModel } from '../media';
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 import CategoryModel from './CategoryModel';
 import { uniqBy } from 'lodash';
 
@@ -9,8 +9,8 @@ let categoryCollection = null;
 export default class CategoryCollection {
   list = [];
   param = {
-    per_page: 100,
-    page: 1
+    limit: 100,
+    offset: 0
   }
   constructor(id) {
     if (id !== categoryId) {
@@ -26,18 +26,20 @@ export default class CategoryCollection {
   }
   
   async more (options) {
-    if (this.list.length >= (this._paging && this._paging.total)) {
+    if (this.list.length >= (this._paging && this._paging.count)) {
       throw new Error('no data')
     }
-    this.list.length !== 0 && ++this.param.page;
+    if (this.list.length) {
+      this.param.offset = (1+this.param.offset)*this.param.limit;
+    }
     const moreList = await this.fetchList(options);
     return moreList;
   }
   async fetchList (options = {}) {
     const param = Object.assign(this.param, options);
-    const response = await wp.categories().param(param);
+    const response = await wpr.categories.read(param);
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async tag => await new CategoryModel(tag)), 'category');
+    const list = await Promise.complete(response.rows.map(async tag => await new CategoryModel(tag)), 'category');
     this.list = [].concat(this.list, list);
     this.list = uniqBy(this.list, 'id');
     this.fetchMap();
@@ -47,10 +49,10 @@ export default class CategoryCollection {
     this.mapList = this.list.reduce((pre, next) => Object.assign(pre, { [next.id]: next }), {})
     return this.mapList;
   }
-  async fetchRootCategories () {
-    const rootCategories = await wp.categories().order('asc').orderby('id').param('per_page', 100).param('parent', 0);
-    return rootCategories;
-  }
+  // async fetchRootCategories () {
+  //   const rootCategories = await wp.categories().order('asc').orderby('id').param('limit', 100).param('parent', 0);
+  //   return rootCategories;
+  // }
   async fetchCategoriesByRootIds (id) {
     const ids = [].concat(id);
     if (!this.list.length) {

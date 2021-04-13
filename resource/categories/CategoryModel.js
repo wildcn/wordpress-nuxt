@@ -1,6 +1,6 @@
 import { isInteger, isPlainObject, isArray, isEmpty } from 'lodash';
 import { MediaModel } from '../media';
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 
 export default class CategoryModel {
   id = null;
@@ -24,7 +24,7 @@ export default class CategoryModel {
     })
   }
   async fetchMeta () {
-    const category = await wp.categories().id(this.id);
+    const category = await wpr.categories.read({id:this.id});
     Object.assign(this, category);
     return this;
   }

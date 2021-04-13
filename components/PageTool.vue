@@ -20,14 +20,14 @@
       <p>手机访问</p>
       <Qrcode class="qrcode"></Qrcode>
     </div>
-    <el-dialog append-to-body title="感谢您的打赏" :visible.sync="rewardDialog">
+    <el-dialog style="display:none" append-to-body title="感谢您的打赏" :visible.sync="rewardDialog">
       <div class="reward-dialog">
         <div class="wechat">
-          <img src="http://cdn.dulianqiang.com/2020/08/wechat-dulianqiang.jpg" />
+          <img src="http://cdn.dulianqiang.com/2020/08/wechat-dulianqiang.jpg?imageView2/2/w/200/h/200" />
           <p>微信打赏</p>
         </div>
         <div class="zhifubao">
-          <img src="http://cdn.dulianqiang.com/2020/08/zhifubao-dulianqiang.jpg" />
+          <img src="http://cdn.dulianqiang.com/2020/08/zhifubao-dulianqiang.jpg?imageView2/2/w/200/h/200" />
           <p>支付宝打赏</p>
         </div>
       </div>

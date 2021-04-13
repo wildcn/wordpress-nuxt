@@ -1,4 +1,4 @@
-import wp from '../../plugins/wpapi';
+import wpr from '../../plugins/wp-xhr';
 import MediaModel from './MediaModel';
 import { uniqBy } from 'lodash';
 const tagId = Symbol();
@@ -8,8 +8,8 @@ export default class MediaCollection {
   list = [];
   mapList = {}
   param = {
-    per_page: 20,
-    page: 1
+    limit: 20,
+    offset: 0
   }
   constructor(id) {
     if (id !== tagId) {
@@ -24,18 +24,20 @@ export default class MediaCollection {
     return mediaCollection;
   }
   async more (options) {
-    if (this.list.length === (this._paging && this._paging.total)) {
+    if (this.list.length === (this._paging && this._paging.count)) {
       throw new Error('no data')
     }
-    this.list.length !== 0 && ++this.param.page;
+    if (this.list.length) {
+      this.param.offset = (1+this.param.offset)*this.param.limit;
+    }
     const moreList = await this.fetchList(options);
     return moreList;
   }
   async fetchList (options) {
     const param = Object.assign(this.param, options);
-    const response = await wp.media(param).param(param)
+    const response = await wpr.media.read();
     this._paging = response._paging;
-    const list = await Promise.complete(response.map(async tag => await new MediaModel(tag)),'mediaCollection/fetchList');
+    const list = response.rows;
     this.list = [].concat(this.list, list);
     this.list = uniqBy(this.list,'id');
     this.fetchMap();
