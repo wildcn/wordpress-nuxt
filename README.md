@@ -1,6 +1,6 @@
 # dulianqiang
 
-## 杜连强 前端工程师 网文爱好者
+## 基于nuxnt构建的博客系统，使用wordpress数据库
 
 ```bash
 # install dependencies

@@ -14,7 +14,7 @@
     </div>
     <div class="copyright">
       <span>@2020</span>
-      <span>备案号 京ICP备15015718号</span>
+      <span>备案号 <a target="_blank" href="https://beian.miit.gov.cn">京ICP备15015718号</a></span>
       <span>博客基于Nuxt和Wordpress打造</span>
     </div>
   </div>

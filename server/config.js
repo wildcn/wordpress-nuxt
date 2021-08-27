@@ -1,4 +1,4 @@
-const serverIp = process.env.NODE_ENV = 'development' ? '127.0.0.1' : '127.0.0.1';
+const serverIp = process.env.NODE_ENV = 'development' ? '101.200.74.68' : '127.0.0.1';
 
 module.exports = {
   cookieSecret: 'tubage097633XX09763333', // cookie加密秘钥
